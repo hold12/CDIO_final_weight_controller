@@ -1,8 +1,8 @@
-package WeightClient;
+package Weight;
 
 import java.io.IOException;
 
-public interface IWeightClientController {
+public interface IWeightController {
     enum KeyPadState {
         LOWER_CHARS,UPPER_CHARS, NUMERIC;
 

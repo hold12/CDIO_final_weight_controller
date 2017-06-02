@@ -132,3 +132,5 @@ hs_err_pid*
 
 # End of https://www.gitignore.io/api/java,intellij,eclipse
 /.idea/dbnavigator.xml
+/.idea/vcs.xml
+/.idea/checkstyle-idea.xml

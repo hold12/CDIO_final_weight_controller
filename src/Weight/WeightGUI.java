@@ -1,14 +1,14 @@
-package WeightClient;
+package Weight;
 
 import Lang.Lang;
 import java.io.IOException;
 import java.util.Scanner;
 
 public class WeightGUI implements IWeightGUI {
-    private IWeightClientController weight;
+    private IWeightController weight;
     private boolean connected = false;
 
-    public WeightGUI(IWeightClientController weight) {
+    public WeightGUI(IWeightController weight) {
         this.weight = weight;
     }
 
@@ -119,7 +119,7 @@ public class WeightGUI implements IWeightGUI {
     public void rm208() {
         String primaryDisplay;
         String secondaryDisplay;
-        IWeightClientController.KeyPadState keyPadState;
+        IWeightController.KeyPadState keyPadState;
         Scanner scn = new Scanner(System.in);
         while(true) {
             System.out.print(Lang.msg("msgPriDisplay") + ": ");
@@ -151,9 +151,9 @@ public class WeightGUI implements IWeightGUI {
 
 
         switch (keyPadChoice) {
-            case 1: keyPadState = IWeightClientController.KeyPadState.LOWER_CHARS; break;
-            case 2: keyPadState = IWeightClientController.KeyPadState.UPPER_CHARS; break;
-            case 3: keyPadState = IWeightClientController.KeyPadState.NUMERIC; break;
+            case 1: keyPadState = IWeightController.KeyPadState.LOWER_CHARS; break;
+            case 2: keyPadState = IWeightController.KeyPadState.UPPER_CHARS; break;
+            case 3: keyPadState = IWeightController.KeyPadState.NUMERIC; break;
             default: keyPadState = null;
         }
 

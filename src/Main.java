@@ -1,20 +1,20 @@
 import Lang.Lang;
-import WeightClient.IWeightClientController;
-import WeightClient.IWeightGUI;
-import WeightClient.WeightClientController;
-import WeightClient.WeightGUI;
+import Weight.IWeightController;
+import Weight.IWeightGUI;
+import Weight.WeightController;
+import Weight.WeightGUI;
 
 import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-    private IWeightClientController weightClient;
+    private IWeightController weightClient;
     private IWeightGUI gui;
     private String input;
     private Scanner scn;
 
     private Main() {
-        weightClient = new WeightClientController();
+        weightClient = new WeightController();
         gui = new WeightGUI(weightClient);
         scn = new Scanner(System.in);
     }
@@ -74,7 +74,7 @@ public class Main {
 
         // Verify Username
         try {
-            userInput = weightClient.rm208("VERIFY", "andersand", IWeightClientController.KeyPadState.UPPER_CHARS);
+            userInput = weightClient.rm208("VERIFY", "andersand", IWeightController.KeyPadState.UPPER_CHARS);
         } catch (IOException e) { System.err.println(Lang.msg("exceptionRM208")); }
 
         if (!userInput.equals("Y")) {
@@ -83,7 +83,7 @@ public class Main {
 
         // Verify Batch
         try {
-            userInput = weightClient.rm208("VERIFY", "salt", IWeightClientController.KeyPadState.UPPER_CHARS);
+            userInput = weightClient.rm208("VERIFY", "salt", IWeightController.KeyPadState.UPPER_CHARS);
         } catch (IOException e) { System.err.println(Lang.msg("exceptionRM208")); }
 
         if (!userInput.equals("Y")) {
@@ -93,7 +93,7 @@ public class Main {
 
         // Unloaded
         try {
-            userInput = weightClient.rm208("VERIFY", "unloaded", IWeightClientController.KeyPadState.UPPER_CHARS);
+            userInput = weightClient.rm208("VERIFY", "unloaded", IWeightController.KeyPadState.UPPER_CHARS);
         } catch (IOException e) { System.err.println(Lang.msg("exceptionRM208")); }
 
         if (!userInput.equals("Y")) {
@@ -103,7 +103,7 @@ public class Main {
 
         // Place tara
         try {
-            userInput = weightClient.rm208("Tare", "placetare", IWeightClientController.KeyPadState.UPPER_CHARS);
+            userInput = weightClient.rm208("Tare", "placetare", IWeightController.KeyPadState.UPPER_CHARS);
         } catch (IOException e) { System.err.println(Lang.msg("exceptionRM208")); }
 
         System.out.println("Tare placed.");
@@ -111,13 +111,13 @@ public class Main {
         System.out.println("Weight successfully tared.");
 
         try {
-            userInput = weightClient.rm208("Tare", "placepowder", IWeightClientController.KeyPadState.UPPER_CHARS);
+            userInput = weightClient.rm208("Tare", "placepowder", IWeightController.KeyPadState.UPPER_CHARS);
         } catch (IOException e) { System.err.println(Lang.msg("exceptionRM208")); }
 
         gui.getCurrentWeight();
 
         try {
-            userInput = weightClient.rm208("Tare", "remove", IWeightClientController.KeyPadState.UPPER_CHARS);
+            userInput = weightClient.rm208("Tare", "remove", IWeightController.KeyPadState.UPPER_CHARS);
         } catch (IOException e) { System.err.println(Lang.msg("exceptionRM208")); }
 
         gui.getCurrentWeight();
@@ -132,7 +132,7 @@ public class Main {
         String userIdIn = "";
         String batchIdIn = "";
         try {
-            userIdIn = weightClient.rm208("User", "Type user id", IWeightClientController.KeyPadState.NUMERIC);
+            userIdIn = weightClient.rm208("User", "Type user id", IWeightController.KeyPadState.NUMERIC);
         } catch (IOException e) {
             System.err.println(Lang.msg("exceptionRM208"));
         }
@@ -145,7 +145,7 @@ public class Main {
         }
 
         try {
-            batchIdIn = weightClient.rm208("Batch", "Type batch id", IWeightClientController.KeyPadState.NUMERIC);
+            batchIdIn = weightClient.rm208("Batch", "Type batch id", IWeightController.KeyPadState.NUMERIC);
         } catch (IOException e) {
             System.err.println(Lang.msg("exceptionRM208"));
         }

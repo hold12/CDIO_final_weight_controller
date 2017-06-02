@@ -1,12 +1,12 @@
-package WeightClient;
+package Weight;
 
 import SimpleTCP.Client.*;
 import java.io.IOException;
 
-public class WeightClientController implements WeightClient.IWeightClientController {
+public class WeightController implements IWeightController {
     private ITCPClient tcp;
 
-    public WeightClientController() {
+    public WeightController() {
         this.tcp = new TCPClient();
     }
 

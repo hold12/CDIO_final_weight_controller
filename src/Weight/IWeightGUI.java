@@ -1,4 +1,4 @@
-package WeightClient;
+package Weight;
 
 public interface IWeightGUI {
     boolean isConnected();
