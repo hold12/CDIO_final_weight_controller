@@ -44,7 +44,8 @@ public class WeightController implements IWeightController {
             throw new IOException("Failed to retrieve the current weight: " + e.getMessage());
         }
         receivedMessage = receivedMessage.replace(" kg", "");
-        return receivedMessage.substring(9);
+        receivedMessage = receivedMessage.substring(7);
+        return receivedMessage.trim();
     }
 
     // T (Tare)
@@ -117,10 +118,12 @@ public class WeightController implements IWeightController {
     @Override
     public String rm208(String primaryDisplay, String secondaryDisplay, KeyPadState keyPadState) throws IOException, StringIndexOutOfBoundsException {
         String userMessage;
+        if (primaryDisplay.length() > 7)
+            throw new StringIndexOutOfBoundsException("The message to the primary display must be within 7 characters long.");
         if (secondaryDisplay.length() > 30)
             throw new StringIndexOutOfBoundsException("The message to the secondary display must be within 30 characters long.");
         try {
-            sendMessage("RM20 8 \"" + secondaryDisplay + "\" \"\" \"" + keyPadState + "\"");
+            sendMessage("RM20 8 \"" + secondaryDisplay + "\" \"" + primaryDisplay + "\" \"" + keyPadState + "\"");
             String tcpRecRm = receiveMessage();
             if (!tcpRecRm.equals("RM20 B"))
                 throw new IOException("Something went wrong when receiving RM20 B message from the weight.");

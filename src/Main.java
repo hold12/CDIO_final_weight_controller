@@ -46,7 +46,14 @@ public class Main {
         System.out.print("menu> ");
         input = scn.nextLine().toLowerCase();
         if (input.startsWith("batch")) {
-            batch("12", "1234");
+            while (true){
+                batch("12", "1234");
+                try {
+                    while(weightClient.rm208("","Press OK to begin anew.", IWeightController.KeyPadState.NUMERIC).equals("RM20 C"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         if (input.startsWith("close") || input.startsWith("exit") || input.startsWith("quit")) {
             return;
@@ -61,10 +68,10 @@ public class Main {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+        String userInput = "";
 
         if(!authenticate(userId, batchId)) return;
-        String userInput = "";
-        System.out.println("User authenticated");
+        //System.out.println("User authenticated");
 
         // Verify Username
         try {
@@ -97,7 +104,7 @@ public class Main {
 
         // Place tara
         try {
-            userInput = weightClient.rm208("Tare", "placetare", IWeightController.KeyPadState.UPPER_CHARS);
+            userInput = weightClient.rm208("", "Place tare", IWeightController.KeyPadState.UPPER_CHARS);
         } catch (IOException e) { System.err.println(Lang.msg("exceptionRM208")); }
 
         //System.out.println("Tare placed.");
@@ -110,7 +117,7 @@ public class Main {
         //System.out.println("Weight tared as " + tareWeight + " kg.");
 
         try {
-            userInput = weightClient.rm208("Tare", "placepowder", IWeightController.KeyPadState.UPPER_CHARS);
+            userInput = weightClient.rm208("", "Place powder", IWeightController.KeyPadState.UPPER_CHARS);
         } catch (IOException e) { System.err.println(Lang.msg("exceptionRM208")); }
 
         float netWeight = 0;
@@ -122,7 +129,7 @@ public class Main {
         //System.out.println("Current weight is " + netWeight + " kg.");
 
         try {
-            userInput = weightClient.rm208("Tare", "remove", IWeightController.KeyPadState.UPPER_CHARS);
+            userInput = weightClient.rm208("", "Remove all", IWeightController.KeyPadState.UPPER_CHARS);
         } catch (IOException e) { System.err.println(Lang.msg("exceptionRM208")); }
 
         float removedWeight = 0;
@@ -132,16 +139,30 @@ public class Main {
             e.printStackTrace();
         }
 
-        if (removedWeight > ((-tareWeight)*1.05) && removedWeight < ((-tareWeight)*0.95)) {
+        /*System.out.println(removedWeight);
+        System.out.println(((-tareWeight)*1.05));
+        System.out.println(((-tareWeight)*0.95));*/
+        if (removedWeight >= ((-tareWeight)*1.05) && removedWeight <= ((-tareWeight)*0.95)) {
             try {
                 weightClient.writeToPrimaryDisplay("OK");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             } catch (IOException e) {
                 System.err.print(Lang.msg("exceptionMessageDelivery"));
             }
         }
         else {
             try {
-                weightClient.writeToPrimaryDisplay("TARE_ERROR");
+                weightClient.writeToPrimaryDisplay("TareErr");
+                weightClient.writeToSecondaryDisplay("Taring not approved. Try again");
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             } catch (IOException e) {
                 System.err.print(Lang.msg("exceptionMessageDelivery"));
             }
