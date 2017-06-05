@@ -1,22 +1,18 @@
 import Lang.Lang;
 import Weight.IWeightController;
-import Weight.IWeightGUI;
 import Weight.WeightController;
-import Weight.WeightGUI;
 
 import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
     private IWeightController weightClient;
-    //private IWeightGUI gui;
     private String input;
     private Scanner scn;
     boolean connected;
 
     private Main() {
         weightClient = new WeightController();
-        //gui = new WeightGUI(weightClient);
         scn = new Scanner(System.in);
     }
 
