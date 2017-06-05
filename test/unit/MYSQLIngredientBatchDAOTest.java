@@ -1,7 +1,7 @@
 package unit;
 
 import jdbclib.IConnector;
-import daoimpl.MYSQLIngredientBatchDAO;
+import dao.IngredientBatchDAO;
 import dto.IngredientBatchDTO;
 import org.junit.Before;
 import org.junit.Test;
@@ -12,12 +12,12 @@ import static org.junit.Assert.*;
 public class MYSQLIngredientBatchDAOTest {
 	private final IngredientBatchDTO testIngredientBatch = new IngredientBatchDTO(1, 2, 3.4);
     private IConnector connector;
-    private MYSQLIngredientBatchDAO ingredientBatchDAO;
+    private IngredientBatchDAO ingredientBatchDAO;
 
     @Before
     public void setUp() throws Exception {
         connector = new TestConnector();
-        ingredientBatchDAO = new MYSQLIngredientBatchDAO(connector);
+        ingredientBatchDAO = new IngredientBatchDAO(connector);
     }
 
     @Test

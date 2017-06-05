@@ -1,7 +1,6 @@
-package daoimpl;
+package dao;
 
 import jdbclib.*;
-import daointerfaces.UserDAO;
 import dto.UserDTO;
 
 import java.sql.ResultSet;
@@ -9,10 +8,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MySQLUserDAO implements UserDAO {
+public class UserDAO implements IUserDAO {
     private IConnector connector;
 
-    public MySQLUserDAO(IConnector connector) {
+    public UserDAO(IConnector connector) {
         this.connector = connector;
     }
 

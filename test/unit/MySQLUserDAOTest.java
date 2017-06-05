@@ -2,7 +2,7 @@ package unit;
 
 import jdbclib.IConnector;
 import dto.UserDTO;
-import daoimpl.MySQLUserDAO;
+import dao.UserDAO;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,12 +11,12 @@ import static org.junit.Assert.*;
 public class MySQLUserDAOTest {
 	private final UserDTO testUser = new UserDTO(1, "John", "Doe", "JD", "p455w0rd!", false);
     private IConnector connector;
-    private MySQLUserDAO userDAO;
+    private UserDAO userDAO;
 
     @Before
     public void setUp() throws Exception {
         connector = new TestConnector();
-        userDAO = new MySQLUserDAO(connector);
+        userDAO = new UserDAO(connector);
     }
 
     @Test

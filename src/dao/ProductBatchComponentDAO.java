@@ -1,7 +1,6 @@
-package daoimpl;
+package dao;
 
 import jdbclib.*;
-import daointerfaces.ProductBatchComponentDAO;
 import dto.ProductBatchComponentDTO;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -10,10 +9,10 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MYSQLProductBatchComponentDAO implements ProductBatchComponentDAO {
+public class ProductBatchComponentDAO implements IProductBatchComponentDAO {
     private IConnector connector;
 
-    public MYSQLProductBatchComponentDAO(IConnector connector) {
+    public ProductBatchComponentDAO(IConnector connector) {
         this.connector = connector;
     }
 

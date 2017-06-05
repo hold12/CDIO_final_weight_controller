@@ -1,7 +1,6 @@
-package daoimpl;
+package dao;
 
 import jdbclib.*;
-import daointerfaces.RecipeDAO;
 import dto.RecipeDTO;
 
 import java.sql.ResultSet;
@@ -9,10 +8,10 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MYSQLRecipeDAO implements RecipeDAO {
+public class RecipeDAO implements IRecipeDAO {
     private IConnector connector;
 
-    public MYSQLRecipeDAO(IConnector connector) {
+    public RecipeDAO(IConnector connector) {
         this.connector = connector;
     }
 

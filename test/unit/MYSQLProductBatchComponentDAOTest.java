@@ -2,7 +2,7 @@ package unit;
 
 import jdbclib.IConnector;
 import dto.ProductBatchComponentDTO;
-import daoimpl.MYSQLProductBatchComponentDAO;
+import dao.ProductBatchComponentDAO;
 import org.junit.Before;
 import org.junit.Test;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
@@ -12,12 +12,12 @@ import static org.junit.Assert.assertTrue;
 public class MYSQLProductBatchComponentDAOTest {
     private final ProductBatchComponentDTO testProductBatchComponent = new ProductBatchComponentDTO(1, 1, 0.5, 10, 1);
     private IConnector connector;
-    private MYSQLProductBatchComponentDAO productBatchComponentDAO;
+    private ProductBatchComponentDAO productBatchComponentDAO;
 
     @Before
     public void setUp() throws Exception {
         connector = new TestConnector();
-        productBatchComponentDAO = new MYSQLProductBatchComponentDAO(connector);
+        productBatchComponentDAO = new ProductBatchComponentDAO(connector);
     }
 
     @Test

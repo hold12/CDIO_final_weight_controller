@@ -1,7 +1,7 @@
 package unit;
 
 import jdbclib.IConnector;
-import daoimpl.MYSQLRecipeDAO;
+import dao.RecipeDAO;
 import dto.RecipeDTO;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,12 +11,12 @@ import static org.junit.Assert.assertTrue;
 public class MYSQLRecipeDAOTest {
     private final RecipeDTO testRecipe = new RecipeDTO(1, "pizza");
     private IConnector connector;
-    private MYSQLRecipeDAO recipeDAO;
+    private RecipeDAO recipeDAO;
 
     @Before
     public void setUp() throws Exception {
         connector = new TestConnector();
-        recipeDAO = new MYSQLRecipeDAO(connector);
+        recipeDAO = new RecipeDAO(connector);
     }
 
     @Test

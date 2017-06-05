@@ -1,7 +1,6 @@
-package daoimpl;
+package dao;
 
 import jdbclib.*;
-import daointerfaces.IngredientDAO;
 import dto.IngredientDTO;
 
 import java.sql.ResultSet;
@@ -9,10 +8,10 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 
-public class MYSQLIngredientDAO implements IngredientDAO {
+public class IngredientDAO implements IIngredientDAO {
     private IConnector connector;
 
-    public MYSQLIngredientDAO(IConnector connector) {
+    public IngredientDAO(IConnector connector) {
         this.connector = connector;
     }
 

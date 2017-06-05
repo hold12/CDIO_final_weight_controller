@@ -1,11 +1,11 @@
-package daointerfaces;
+package dao;
 
 import java.util.List;
 import jdbclib.DALException;
 
 import dto.ProductBatchComponentDTO;
 
-public interface ProductBatchComponentDAO {
+public interface IProductBatchComponentDAO {
 	ProductBatchComponentDTO getProductBatchComponent(int productbatchId, int recipebatchId) throws DALException;
 	List<ProductBatchComponentDTO> getProductBatchComponentList(int productbatchId) throws DALException;
 	List<ProductBatchComponentDTO> getProductBatchComponentList() throws DALException;
