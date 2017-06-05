@@ -51,11 +51,11 @@ public class UserDTO {
 		UserDTO that = (UserDTO) o;
 
 		if (userId != that.userId) return false;
-		if (isActive != that.isActive) return false;
 		if (userFirstname != null ? !userFirstname.equals(that.userFirstname) : that.userFirstname != null) return false;
 		if (userLastname != null ? !userLastname.equals(that.userLastname) : that.userLastname != null) return false;
 		if (initials != null ? !initials.equals(that.initials) : that.initials != null) return false;
-		return password != null ? password.equals(that.password) : that.password == null;
+		if (password != null ? password.equals(that.password) : that.password == null) return false;
+		return isActive != that.isActive;
 	}
 
 	public String toString() {

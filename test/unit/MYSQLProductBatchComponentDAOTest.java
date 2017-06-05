@@ -22,10 +22,9 @@ public class MYSQLProductBatchComponentDAOTest {
 
     @Test
     public void getProductBatchComponent() throws Exception {
-        ProductBatchComponentDTO pbcExpected = testProductBatchComponent;
-        ProductBatchComponentDTO pbcActual = productBatchComponentDAO.getProductBatchComponent(1, 1);
+        final ProductBatchComponentDTO pbcActual = productBatchComponentDAO.getProductBatchComponent(1, 1);
         assertTrue(((TestConnector) connector).isSelected());
-        assertTrue(pbcExpected.equals(pbcActual));
+        assertTrue(testProductBatchComponent.equals(pbcActual));
     }
 
     @Test
@@ -36,7 +35,7 @@ public class MYSQLProductBatchComponentDAOTest {
 
     @Test(expected = NotImplementedException.class)
     public void updateProductBatchComponent() throws Exception {
-        ProductBatchComponentDTO newProductBatchComponent = new ProductBatchComponentDTO(1, 1, 0.5, 10, 2);
+        final ProductBatchComponentDTO newProductBatchComponent = new ProductBatchComponentDTO(1, 1, 0.5, 10, 2);
         productBatchComponentDAO.updateProductBatchComponent(newProductBatchComponent);
     }
 

@@ -21,10 +21,9 @@ public class MYSQLIngredientDAOTest {
 
     @Test
     public void getIngredient() throws Exception {
-        IngredientDTO inExpected = testIngredient;
-        IngredientDTO inActual = ingredientDAO.getIngredient(1);
+        final IngredientDTO inActual = ingredientDAO.getIngredient(1);
         assertTrue(((TestConnector) connector).isSelected());
-        assertTrue(inExpected.equals(inActual));
+        assertTrue(testIngredient.equals(inActual));
     }
 
     @Test
@@ -35,7 +34,7 @@ public class MYSQLIngredientDAOTest {
 
     @Test
     public void updateIngredient() throws Exception {
-        IngredientDTO newIngredient = new IngredientDTO(1, "ketchup", "Heinz");
+        final IngredientDTO newIngredient = new IngredientDTO(1, "ketchup", "Heinz");
         ingredientDAO.updateIngredient(newIngredient);
         assertTrue(((TestConnector) connector).isUpdated());
     }

@@ -10,10 +10,9 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import static org.junit.Assert.*;
 
 public class MYSQLIngredientBatchDAOTest {
+	private final IngredientBatchDTO testIngredientBatch = new IngredientBatchDTO(1, 2, 3.4);
     private IConnector connector;
     private MYSQLIngredientBatchDAO ingredientBatchDAO;
-
-    private final IngredientBatchDTO testIngredientBatch = new IngredientBatchDTO(1, 2, 3.4);
 
     @Before
     public void setUp() throws Exception {
@@ -23,10 +22,9 @@ public class MYSQLIngredientBatchDAOTest {
 
     @Test
     public void getIngredientBatch() throws Exception {
-        IngredientBatchDTO ibExpected = testIngredientBatch;
-        IngredientBatchDTO ibActual = ingredientBatchDAO.getIngredientBatch(1);
+        final IngredientBatchDTO ibActual = ingredientBatchDAO.getIngredientBatch(1);
         assertTrue(((TestConnector) connector).isSelected());
-        assertTrue(ibExpected.equals(ibActual));
+        assertTrue(testIngredientBatch.equals(ibActual));
     }
 
     @Test
@@ -37,7 +35,7 @@ public class MYSQLIngredientBatchDAOTest {
 
     @Test
     public void updateIngredientBatch() throws Exception {
-        IngredientBatchDTO newIngredientBatch = new IngredientBatchDTO(1, 1, 3.4);
+        final IngredientBatchDTO newIngredientBatch = new IngredientBatchDTO(1, 1, 3.4);
         ingredientBatchDAO.updateIngredientBatch(newIngredientBatch);
         assertTrue(((TestConnector) connector).isUpdated());
     }

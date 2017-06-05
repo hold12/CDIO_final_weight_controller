@@ -20,7 +20,7 @@ public class IngredientDTO
         IngredientDTO that = (IngredientDTO) o;
 
         if (ingredientId != that.ingredientId) return false;
-        if (ingredientName != that.ingredientName) return false;
+        if (ingredientName.equals(that.ingredientName)) return false;
         return supplier != null ? supplier.equals(that.supplier) : that.supplier == null;
     }
 

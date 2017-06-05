@@ -21,10 +21,9 @@ public class MYSQLRecipeDAOTest {
 
     @Test
     public void getRecipe() throws Exception {
-        RecipeDTO reExpected = testRecipe;
-        RecipeDTO reActual = recipeDAO.getRecipe(1);
+		final RecipeDTO reActual = recipeDAO.getRecipe(1);
         assertTrue(((TestConnector) connector).isSelected());
-        assertTrue(reExpected.equals(reActual));
+        assertTrue(testRecipe.equals(reActual));
     }
 
     @Test
@@ -35,7 +34,7 @@ public class MYSQLRecipeDAOTest {
 
     @Test
     public void updateRecipe() throws Exception {
-        RecipeDTO newRecipe = new RecipeDTO(1, "Melt cheese");
+		final RecipeDTO newRecipe = new RecipeDTO(1, "Melt cheese");
         recipeDAO.updateRecipe(newRecipe);
         assertTrue(((TestConnector) connector).isUpdated());
     }

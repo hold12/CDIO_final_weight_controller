@@ -1,16 +1,17 @@
 package unit;
 
-import static org.junit.Assert.*;
 import jdbclib.IConnector;
 import dto.RecipeComponentDTO;
 import daoimpl.MYSQLRecipeComponentDAO;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.*;
+
 public class MYSQLRecipeComponentDAOTest {
+	private final RecipeComponentDTO testRecipeComponent = new RecipeComponentDTO(1, 2, 1.2,  1.2);
     private IConnector connector;
     private MYSQLRecipeComponentDAO recipeComponentDAO;
-    private final RecipeComponentDTO testRecipeComponent = new RecipeComponentDTO(1, 2, 1.2,  1.2);
 
 
 
@@ -23,10 +24,9 @@ public class MYSQLRecipeComponentDAOTest {
 
     @Test
     public void getRecipeComponent() throws Exception {
-        RecipeComponentDTO ibExpected = testRecipeComponent;
-        RecipeComponentDTO ibActual = recipeComponentDAO.getRecipeComponent(1, 2);
+		final RecipeComponentDTO ibActual = recipeComponentDAO.getRecipeComponent(1, 2);
         assertTrue(((TestConnector) connector).isSelected());
-        assertTrue(ibExpected.equals(ibActual));
+        assertTrue(testRecipeComponent.equals(ibActual));
 
     }
 
@@ -39,7 +39,7 @@ public class MYSQLRecipeComponentDAOTest {
 
     @Test
     public void updateRecipeComponent() throws Exception {
-        RecipeComponentDTO newRecipeComponent = new RecipeComponentDTO(1, 2, 1.4,  1.4);
+		final RecipeComponentDTO newRecipeComponent = new RecipeComponentDTO(1, 2, 1.4,  1.4);
         recipeComponentDAO.updateRecipeComponent(newRecipeComponent);
         assertTrue(((TestConnector) connector).isUpdated());
 
