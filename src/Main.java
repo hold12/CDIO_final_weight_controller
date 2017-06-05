@@ -9,7 +9,7 @@ public class Main {
     private IWeightController weightClient;
     private String input;
     private Scanner scn;
-    boolean connected;
+    private boolean connected;
 
     private Main() {
         weightClient = new WeightController();
