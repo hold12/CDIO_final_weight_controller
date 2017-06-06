@@ -1,21 +1,18 @@
 import Lang.Lang;
 import Weight.IWeightController;
-import Weight.IWeightGUI;
 import Weight.WeightController;
-import Weight.WeightGUI;
 
 import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
     private IWeightController weightClient;
-    private IWeightGUI gui;
     private String input;
     private Scanner scn;
+    private boolean connected;
 
     private Main() {
         weightClient = new WeightController();
-        gui = new WeightGUI(weightClient);
         scn = new Scanner(System.in);
     }
 
@@ -49,12 +46,16 @@ public class Main {
         System.out.print("menu> ");
         input = scn.nextLine().toLowerCase();
         if (input.startsWith("batch")) {
-            batch("12", "1234");
+            while (true){
+                batch("12", "1234");
+                try {
+                    while(weightClient.rm208("","Press OK to begin anew.", IWeightController.KeyPadState.NUMERIC).equals("RM20 C"));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
-        if (input.startsWith("console"))
-            console();
         if (input.startsWith("close") || input.startsWith("exit") || input.startsWith("quit")) {
-            gui.close();
             return;
         }
 
@@ -67,10 +68,10 @@ public class Main {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+        String userInput = "";
 
         if(!authenticate(userId, batchId)) return;
-        String userInput = "";
-        System.out.println("User authenticated");
+        //System.out.println("User authenticated");
 
         // Verify Username
         try {
@@ -89,7 +90,7 @@ public class Main {
         if (!userInput.equals("Y")) {
             batch(userId, batchId); return;
         }
-        System.out.println("User verified information.");
+        //System.out.println("User verified information.");
 
         // Unloaded
         try {
@@ -99,33 +100,73 @@ public class Main {
         if (!userInput.equals("Y")) {
             batch(userId, batchId); return;
         }
-        System.out.println("Weight is unloaded.");
+        //System.out.println("Weight is unloaded.");
 
         // Place tara
         try {
-            userInput = weightClient.rm208("Tare", "placetare", IWeightController.KeyPadState.UPPER_CHARS);
+            userInput = weightClient.rm208("", "Place tare", IWeightController.KeyPadState.UPPER_CHARS);
         } catch (IOException e) { System.err.println(Lang.msg("exceptionRM208")); }
 
-        System.out.println("Tare placed.");
-        gui.tareWeight();
-        System.out.println("Weight successfully tared.");
+        //System.out.println("Tare placed.");
+        float tareWeight = 0;
+        try {
+            tareWeight = stof(weightClient.tareWeight());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //System.out.println("Weight tared as " + tareWeight + " kg.");
 
         try {
-            userInput = weightClient.rm208("Tare", "placepowder", IWeightController.KeyPadState.UPPER_CHARS);
+            userInput = weightClient.rm208("", "Place powder", IWeightController.KeyPadState.UPPER_CHARS);
         } catch (IOException e) { System.err.println(Lang.msg("exceptionRM208")); }
 
-        gui.getCurrentWeight();
+        float netWeight = 0;
+        try {
+            netWeight = stof(weightClient.getCurrentWeight());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //System.out.println("Current weight is " + netWeight + " kg.");
 
         try {
-            userInput = weightClient.rm208("Tare", "remove", IWeightController.KeyPadState.UPPER_CHARS);
+            userInput = weightClient.rm208("", "Remove all", IWeightController.KeyPadState.UPPER_CHARS);
         } catch (IOException e) { System.err.println(Lang.msg("exceptionRM208")); }
 
-        gui.getCurrentWeight();
-        gui.tareWeight();
-
+        float removedWeight = 0;
         try {
-            weightClient.writeToPrimaryDisplay("OK");
-        } catch (IOException e) { System.err.print(Lang.msg("exceptionMessageDelivery")); }
+            removedWeight = stof(weightClient.getCurrentWeight());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        /*System.out.println(removedWeight);
+        System.out.println(((-tareWeight)*1.05));
+        System.out.println(((-tareWeight)*0.95));*/
+        if (removedWeight >= ((-tareWeight)*1.05) && removedWeight <= ((-tareWeight)*0.95)) {
+            try {
+                weightClient.writeToPrimaryDisplay("OK");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                System.err.print(Lang.msg("exceptionMessageDelivery"));
+            }
+        }
+        else {
+            try {
+                weightClient.writeToPrimaryDisplay("TareErr");
+                weightClient.writeToSecondaryDisplay("Taring not approved. Try again");
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                System.err.print(Lang.msg("exceptionMessageDelivery"));
+            }
+        }
     }
 
     private boolean authenticate(String userId, String batchId) {
@@ -159,33 +200,6 @@ public class Main {
         return true;
     }
 
-    private void console() {
-        if (!gui.isConnected()) System.exit(1);
-
-        System.out.print("console> ");
-        input = scn.nextLine().toLowerCase();
-
-        if (input.startsWith("get")) {
-            String[] arguments = input.split(" ");
-            if (arguments.length == 2 && arguments[1].toLowerCase().equals("weight"))
-                gui.getCurrentWeight();
-        }
-        if (input.startsWith("tare"))
-            gui.tareWeight();
-        if (input.startsWith("write"))
-            write();
-        if (input.startsWith("clear"))
-            gui.clearPrimaryDisplay();
-        if (input.startsWith("rm208"))
-            gui.rm208();
-        if (input.startsWith("set weight"))
-            gui.setNewGrossWeight();
-        if (input.startsWith("close") || input.startsWith("exit") || input.startsWith("quit"))
-            return;
-
-        console();
-    }
-
     private boolean connect() {
         String[] arguments = input.split(" ");
         if (arguments.length != 3)
@@ -193,17 +207,23 @@ public class Main {
         if (stoi(arguments[2]) == -1)
             return false;
 
-        return gui.connect(arguments[1], stoi(arguments[2]));
-    }
+        String host = arguments[1];
+        int port = stoi(arguments[2]);
 
-    private void write() {
-        String[] arguments = input.split(" ");
-        if (arguments.length != 2)
-            return;
-        if (arguments[1].equals("primary"))
-            gui.writeToPrimaryDisplay();
-        else if (arguments[1].equals("secondary"))
-            gui.writeToSecondaryDisplay();
+        if (connected) return true;
+        System.out.println(Lang.msg("connecting") + " " + host + ":" + port + "...");
+
+        try {
+            weightClient.connect(host, port);
+        } catch (IOException e) {
+            System.err.println(Lang.msg("exceptionConnect"));
+            System.out.println(Lang.msg("exiting"));
+            return false;
+        }
+
+        System.out.println(Lang.msg("connectionEstablished"));
+        connected = true;
+        return true;
     }
 
     private static int stoi(String str) {
@@ -211,6 +231,16 @@ public class Main {
             return Integer.parseInt(str);
         } catch (Exception e) {
             System.err.println(Lang.msg("errSTOI") + "!");
+            return -1;
+        }
+    }
+
+    private static float stof(String str) {
+        try {
+            str = str.replace(",",".");
+            return Float.parseFloat(str);
+        } catch (Exception e) {
+            System.err.println(Lang.msg("errSTOF") + "!");
             return -1;
         }
     }

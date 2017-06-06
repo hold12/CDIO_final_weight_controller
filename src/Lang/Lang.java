@@ -12,10 +12,14 @@ public class Lang {
     public static String msg(String message) { return resourceBundle.getString(message); }
 
     public static void setLanguage(String[] args) {
-        if (args.length != 2) {
-            lang = "en";
-            country = "UK";
-        } else {
+        //if (args.length != 2) {
+        //    lang = "en";
+        //    country = "UK";
+        //} else {
+        //    lang = args[0];
+        //    country = args[1];
+        //}
+        if (args.length == 2) {
             lang = args[0];
             country = args[1];
         }
