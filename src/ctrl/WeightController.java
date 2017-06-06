@@ -1,4 +1,4 @@
-package Weight;
+package ctrl;
 
 import SimpleTCP.Client.*;
 

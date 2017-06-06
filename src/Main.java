@@ -1,6 +1,6 @@
-import Lang.Lang;
-import Weight.IWeightController;
-import Weight.WeightController;
+import lang.Lang;
+import ctrl.IWeightController;
+import ctrl.WeightController;
 
 import java.io.IOException;
 import java.util.Scanner;
