@@ -85,34 +85,4 @@ public class RecipeComponentDAO implements IRecipeComponentDAO {
         return list;
     }
 
-    @Override
-    public void createRecipeComponent(RecipeComponentDTO recipeComponent) throws DALException {
-        connector.update(Queries.getFormatted(
-                "recipecomponent.insert",
-                Integer.toString(recipeComponent.getIngredientId()),
-                Integer.toString(recipeComponent.getRecipeId()),
-                Double.toString(recipeComponent.getNominatedNetWeight()),
-                Double.toString(recipeComponent.getTolerance())
-        ));
-    }
-
-    @Override
-    public void updateRecipeComponent(RecipeComponentDTO recipeComponent) throws DALException {
-        connector.update(Queries.getFormatted(
-                "recipecomponent.update",
-                Integer.toString(recipeComponent.getIngredientId()),
-                Integer.toString(recipeComponent.getRecipeId()),
-                Double.toString(recipeComponent.getNominatedNetWeight()),
-                Double.toString(recipeComponent.getTolerance())
-        ));
-    }
-
-    @Override
-    public void deleteRecipeComponent(RecipeComponentDTO recipeComponent) throws DALException {
-        connector.update(Queries.getFormatted(
-                "recipecomponent.delete",
-                Integer.toString(recipeComponent.getIngredientId()),
-                Integer.toString(recipeComponent.getRecipeId())
-        ));
-    }
 }

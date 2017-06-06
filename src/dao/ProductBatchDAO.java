@@ -28,7 +28,8 @@ public class ProductBatchDAO implements IProductBatchDAO {
             return new ProductBatchDTO(
                     rs.getInt("productbatch_id"),
                     rs.getInt("status"),
-                    rs.getInt("recipe_id")
+                    rs.getInt("recipe_id"),
+                    rs.getInt("user_id")
             );
         } catch (SQLException e) {
             throw new DALException(e);
@@ -48,7 +49,8 @@ public class ProductBatchDAO implements IProductBatchDAO {
                 list.add(new ProductBatchDTO(
                         rs.getInt("productbatch_id"),
                         rs.getInt("status"),
-                        rs.getInt("recipe_id")
+                        rs.getInt("recipe_id"),
+                        rs.getInt("user_id")
                 ));
             }
         } catch (SQLException e) {
@@ -57,28 +59,15 @@ public class ProductBatchDAO implements IProductBatchDAO {
 
         return list;
     }
-
-    @Override
-    public void createProductBatch(ProductBatchDTO productBatch) throws DALException {
-        connector.update(Queries.getFormatted(
-                "productbatch.insert",
-                Integer.toString(productBatch.getStatus()),
-                Integer.toString(productBatch.getRecipeId())
-        ));
-    }
-
     @Override
     public void updateProductBatch(ProductBatchDTO productBatch) throws DALException {
         connector.update(Queries.getFormatted(
                 "productbatch.update",
                 Integer.toString(productBatch.getProductbatchId()),
                 Integer.toString(productBatch.getStatus()),
-                Integer.toString(productBatch.getRecipeId())
+                Integer.toString(productBatch.getRecipeId()),
+                Integer.toString(productBatch.getUserId())
         ));
     }
 
-    @Override
-    public void deleteProductBatch(ProductBatchDTO productBatch) throws DALException {
-        throw new NotImplementedException();
-    }
 }

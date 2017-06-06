@@ -55,29 +55,4 @@ public class RecipeDAO implements IRecipeDAO {
 
         return list;
     }
-
-    @Override
-    public void createRecipe(RecipeDTO recipe) throws DALException {
-        connector.update(Queries.getFormatted(
-                "recipe.insert",
-                recipe.getRecipeName()
-        ));
-    }
-
-    @Override
-    public void updateRecipe(RecipeDTO recipe) throws DALException {
-        connector.update(Queries.getFormatted(
-                "recipe.update",
-                Integer.toString(recipe.getRecipeId()),
-                recipe.getRecipeName()
-        ));
-    }
-
-    @Override
-    public void deleteRecipe(RecipeDTO recipe) throws DALException {
-        connector.update(Queries.getFormatted(
-                "recipe.delete",
-                Integer.toString(recipe.getRecipeId())
-        ));
-    }
 }

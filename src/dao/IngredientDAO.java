@@ -57,30 +57,4 @@ public class IngredientDAO implements IIngredientDAO {
         return list;
     }
 
-    @Override
-    public void createIngredient(IngredientDTO ingredient) throws DALException {
-        connector.update(Queries.getFormatted(
-                "ingredient.insert",
-                ingredient.getIngredientName(),
-                ingredient.getSupplier()
-        ));
-    }
-
-    @Override
-    public void updateIngredient(IngredientDTO ingredient) throws DALException {
-        connector.update(Queries.getFormatted(
-                "ingredient.update",
-                Integer.toString(ingredient.getIngredientId()),
-                ingredient.getIngredientName(),
-                ingredient.getSupplier()
-        ));
-    }
-
-    @Override
-    public void deleteIngredient(IngredientDTO ingredient) throws DALException {
-        connector.update(Queries.getFormatted(
-                "ingredient.delete",
-                Integer.toString(ingredient.getIngredientId())
-        ));
-    }
 }

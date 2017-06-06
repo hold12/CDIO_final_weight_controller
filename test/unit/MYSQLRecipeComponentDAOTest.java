@@ -30,26 +30,4 @@ public class MYSQLRecipeComponentDAOTest {
 
     }
 
-    @Test
-    public void createRecipeComponent() throws Exception {
-        recipeComponentDAO.createRecipeComponent(testRecipeComponent);
-        assertTrue(((TestConnector) connector).isInserted());
-
-    }
-
-    @Test
-    public void updateRecipeComponent() throws Exception {
-		final RecipeComponentDTO newRecipeComponent = new RecipeComponentDTO(1, 2, 1.4,  1.4);
-        recipeComponentDAO.updateRecipeComponent(newRecipeComponent);
-        assertTrue(((TestConnector) connector).isUpdated());
-
-
-    }
-
-    @Test
-    public void deleteRecipeComponent() throws Exception {
-        recipeComponentDAO.deleteRecipeComponent(testRecipeComponent);
-
-    }
-
 }

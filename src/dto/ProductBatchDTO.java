@@ -4,11 +4,13 @@ public class ProductBatchDTO {
 	private int productbatchId;
 	private int status;
 	private int recipeId;
+	private int userId;
 	
-	public ProductBatchDTO(int productbatchId, int status, int recipeId) {
+	public ProductBatchDTO(int productbatchId, int status, int recipeId, int userId) {
 		this.productbatchId = productbatchId;
 		this.status = status;
 		this.recipeId = recipeId;
+		this.userId = userId;
 	}
 
 	@Override
@@ -20,6 +22,7 @@ public class ProductBatchDTO {
 
 		if (productbatchId != that.productbatchId) return false;
 		if (status != that.status) return false;
+		if (userId != that.userId) return false;
 		return recipeId == that.recipeId;
 	}
 	
@@ -28,7 +31,9 @@ public class ProductBatchDTO {
 	public int getStatus() { return status; }
 	public void setStatus(int status) { this.status = status; }
 	public int getRecipeId() { return recipeId; }
+	public void setUserId(int userId) { this.userId = userId; }
+	public int getUserId() { return userId; }
 	public void setRecipeId(int recipeId) { this.recipeId = recipeId; }
-	public String toString() { return productbatchId + "\t" + status + "\t" + recipeId; }
+	public String toString() { return productbatchId + "\t" + status + "\t" + recipeId + "\t" + userId; }
 }
 

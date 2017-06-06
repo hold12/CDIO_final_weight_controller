@@ -5,15 +5,13 @@ public class ProductBatchComponentDTO {
 	private int ingredientbatchId;
 	private double tare;
 	private double netWeight;
-	private int userId;
 
 
-	public ProductBatchComponentDTO(int productbatchId, int ingredientbatchId, double tare, double netWeight, int userId) {
+	public ProductBatchComponentDTO(int productbatchId, int ingredientbatchId, double tare, double netWeight) {
 		this.productbatchId = productbatchId;
 		this.ingredientbatchId = ingredientbatchId;
 		this.tare = tare;
 		this.netWeight = netWeight;
-		this.userId = userId;
 	}
 
     @Override
@@ -26,8 +24,7 @@ public class ProductBatchComponentDTO {
         if (productbatchId != that.productbatchId) return false;
         if (ingredientbatchId != that.ingredientbatchId) return false;
         if (tare != that.tare) return false;
-        if (netWeight != that.netWeight) return false;
-        return userId == that.userId;
+        return netWeight == that.netWeight;
     }
 
 	public int getProductbatchId() { return productbatchId; }
@@ -38,10 +35,8 @@ public class ProductBatchComponentDTO {
 	public void setTare(double tare) { this.tare = tare; }
 	public double getNetWeight() { return netWeight; }
 	public void setNetWeight(double netWeight) { this.netWeight = netWeight; }
-	public int getUserId() { return userId; }
-	public void setUserId(int operatorId) { this.userId = userId; }
 
     public String toString() {
-        return productbatchId + "\t" + ingredientbatchId +"\t" + tare +"\t" + netWeight + "\t" + userId;
+        return productbatchId + "\t" + ingredientbatchId +"\t" + tare +"\t" + netWeight;
 	}
 }

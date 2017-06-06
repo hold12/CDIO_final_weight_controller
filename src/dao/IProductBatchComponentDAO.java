@@ -6,10 +6,10 @@ import jdbclib.DALException;
 import dto.ProductBatchComponentDTO;
 
 public interface IProductBatchComponentDAO {
-	ProductBatchComponentDTO getProductBatchComponent(int productbatchId, int recipebatchId) throws DALException;
-	List<ProductBatchComponentDTO> getProductBatchComponentList(int productbatchId) throws DALException;
+	ProductBatchComponentDTO getProductBatchComponent(int productBatchId, int ingredientBatchId) throws DALException;
+	List<ProductBatchComponentDTO> getProductBatchComponentList(int productBatchId) throws DALException;
 	List<ProductBatchComponentDTO> getProductBatchComponentList() throws DALException;
-	void createProductBatchComponent(ProductBatchComponentDTO produktBatchComponent) throws DALException;
+	void createProductBatchComponent(ProductBatchComponentDTO productBatchComponent) throws DALException;
 	void updateProductBatchComponent(ProductBatchComponentDTO productBatchComponent) throws DALException;
 	void deleteProductBatchComponent(ProductBatchComponentDTO productBatchComponent) throws DALException;
 }

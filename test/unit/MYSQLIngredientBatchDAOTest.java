@@ -27,22 +27,4 @@ public class MYSQLIngredientBatchDAOTest {
         assertTrue(testIngredientBatch.equals(ibActual));
     }
 
-    @Test
-    public void createIngredientBatch() throws Exception {
-        ingredientBatchDAO.createIngredientBatch(testIngredientBatch);
-        assertTrue(((TestConnector) connector).isInserted());
-    }
-
-    @Test
-    public void updateIngredientBatch() throws Exception {
-        final IngredientBatchDTO newIngredientBatch = new IngredientBatchDTO(1, 1, 3.4);
-        ingredientBatchDAO.updateIngredientBatch(newIngredientBatch);
-        assertTrue(((TestConnector) connector).isUpdated());
-    }
-
-    @Test(expected = NotImplementedException.class)
-    public void deleteIngredientBatch() throws Exception {
-        ingredientBatchDAO.deleteIngredientBatch(testIngredientBatch);
-    }
-
 }

@@ -54,7 +54,7 @@ public class TestConnector implements IConnector {
                 // Insert an ingredient to the ResultSet
                 insertIngredientResultSet(ingredientDTO);
             } else if (cmd.contains("from view_productbatchcomponent")) {
-                ProductBatchComponentDTO productBatchComponentDTO = new ProductBatchComponentDTO(1, 1, 0.5, 10, 1);
+                ProductBatchComponentDTO productBatchComponentDTO = new ProductBatchComponentDTO(1, 1, 0.5, 10);
                 // Insert an ingredient to the ResultSet
                 insertProductBatchComponentResultSet(productBatchComponentDTO);
             } else if(cmd.contains("from view_recipecomponent")){
@@ -65,7 +65,7 @@ public class TestConnector implements IConnector {
                 // Insert a recipe to the ResultSet
                 insertRecipeResultSet(recipeDTO);
             } else if (cmd.contains("from view_productbatch")) {
-                ProductBatchDTO productBatchDTO = new ProductBatchDTO(1, 0, 1);
+                ProductBatchDTO productBatchDTO = new ProductBatchDTO(1, 0, 1,1);
                 // Insert an productbatch to the ResultSet
                 insertProductBatchResultSet(productBatchDTO);
             }
@@ -95,8 +95,8 @@ public class TestConnector implements IConnector {
         try {
             mockery.checking(new Expectations() {{
                 allowing(resultSet).getInt("user_id");           will(returnValue(user.getUserId()));
-                allowing(resultSet).getString("user_firstname"); will(returnValue(user.getUserFirstname()));
-                allowing(resultSet).getString("user_lastname");  will(returnValue(user.getUserLastname()));
+                allowing(resultSet).getString("user_firstname"); will(returnValue(user.getFirstname()));
+                allowing(resultSet).getString("user_lastname");  will(returnValue(user.getLastname()));
                 allowing(resultSet).getString("initials");           will(returnValue(user.getInitials()));
                 allowing(resultSet).getString("password");           will(returnValue(user.getPassword()));
                 allowing(resultSet).getBoolean("is_active");         will(returnValue(user.isActive()));
@@ -137,7 +137,6 @@ public class TestConnector implements IConnector {
                 allowing(resultSet).getInt("ingredientbatch_id"); will(returnValue(productBatchComponent.getIngredientbatchId()));
                 allowing(resultSet).getDouble("tare");            will(returnValue(productBatchComponent.getTare()));
                 allowing(resultSet).getDouble("net_weight");      will(returnValue(productBatchComponent.getNetWeight()));
-                allowing(resultSet).getInt("user_id");        will(returnValue(productBatchComponent.getUserId()));
             }});
         } catch (SQLException e) {
             throw new DALException(e);

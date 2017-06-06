@@ -26,24 +26,4 @@ public class MySQLUserDAOTest {
         assertTrue(testUser.equals(userActual));
     }
 
-    @Test
-    public void createUser() throws Exception {
-        userDAO.createUser(testUser);
-        assertTrue(((TestConnector) connector).isInserted());
-    }
-
-    @Test
-    public void updateUser() throws Exception {
-		final UserDTO opNew = new UserDTO(1, "Jane", "Doe", "JD", "p455w0rd!", false);
-        opNew.setUserFirstname("Jane");
-        userDAO.updateUser(opNew);
-        assertTrue(((TestConnector) connector).isUpdated());
-    }
-
-    @Test
-    public void deleteUser() throws Exception {
-        userDAO.deleteUser(testUser);
-        assertTrue(((TestConnector) connector).isDeleted());
-    }
-
 }

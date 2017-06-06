@@ -30,8 +30,7 @@ public class ProductBatchComponentDAO implements IProductBatchComponentDAO {
                     rs.getInt("productbatch_id"),
                     rs.getInt("ingredientbatch_id"),
                     rs.getDouble("tare"),
-                    rs.getDouble("net_weight"),
-                    rs.getInt("user_id")
+                    rs.getDouble("net_weight")
             );
         } catch (SQLException e) {
             throw new DALException(e);
@@ -53,8 +52,7 @@ public class ProductBatchComponentDAO implements IProductBatchComponentDAO {
                         rs.getInt("productbatch_id"),
                         rs.getInt("ingredientbatch_id"),
                         rs.getDouble("tare"),
-                        rs.getDouble("net_weight"),
-                        rs.getInt("user_id")
+                        rs.getDouble("net_weight")
                 ));
             }
         } catch (SQLException e) {
@@ -78,8 +76,7 @@ public class ProductBatchComponentDAO implements IProductBatchComponentDAO {
                         rs.getInt("productbatch_id"),
                         rs.getInt("ingredientbatch_id"),
                         rs.getDouble("tare"),
-                        rs.getDouble("net_weight"),
-                        rs.getInt("user_id")
+                        rs.getDouble("net_weight")
                 ));
             }
         } catch (SQLException e) {
@@ -96,8 +93,7 @@ public class ProductBatchComponentDAO implements IProductBatchComponentDAO {
                 Integer.toString(productBatchComponent.getProductbatchId()),
                 Integer.toString(productBatchComponent.getIngredientbatchId()),
                 Double.toString(productBatchComponent.getTare()),
-                Double.toString(productBatchComponent.getNetWeight()),
-                Integer.toString(productBatchComponent.getUserId())
+                Double.toString(productBatchComponent.getNetWeight())
         ));
     }
 

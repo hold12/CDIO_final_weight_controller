@@ -82,27 +82,4 @@ public class IngredientBatchDAO implements IIngredientBatchDAO {
         return list;
     }
 
-    @Override
-    public void createIngredientBatch(IngredientBatchDTO ingredientBatch) throws DALException {
-        connector.update(Queries.getFormatted(
-                "ingredientbatch.insert",
-                Integer.toString(ingredientBatch.getIngredientId()),
-                Double.toString(ingredientBatch.getAmount())
-        ));
-    }
-
-    @Override
-    public void updateIngredientBatch(IngredientBatchDTO ingredientBatch) throws DALException {
-        connector.update(Queries.getFormatted(
-                "ingredientbatch.update",
-                Integer.toString(ingredientBatch.getIngredientBatchId()),
-                Integer.toString(ingredientBatch.getIngredientId()),
-                Double.toString(ingredientBatch.getAmount())
-        ));
-    }
-
-    @Override
-    public void deleteIngredientBatch(IngredientBatchDTO ingredientBatch) throws DALException {
-        throw new NotImplementedException();
-    }
 }

@@ -26,22 +26,4 @@ public class MYSQLIngredientDAOTest {
         assertTrue(testIngredient.equals(inActual));
     }
 
-    @Test
-    public void createIngredient() throws Exception {
-        ingredientDAO.createIngredient(testIngredient);
-        assertTrue(((TestConnector) connector).isInserted());
-    }
-
-    @Test
-    public void updateIngredient() throws Exception {
-        final IngredientDTO newIngredient = new IngredientDTO(1, "ketchup", "Heinz");
-        ingredientDAO.updateIngredient(newIngredient);
-        assertTrue(((TestConnector) connector).isUpdated());
-    }
-
-    @Test
-    public void deleteIngredient() throws Exception {
-        ingredientDAO.deleteIngredient(testIngredient);
-        assertTrue(((TestConnector) connector).isDeleted());
-    }
 }

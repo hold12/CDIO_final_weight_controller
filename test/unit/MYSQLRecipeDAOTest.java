@@ -26,22 +26,4 @@ public class MYSQLRecipeDAOTest {
         assertTrue(testRecipe.equals(reActual));
     }
 
-    @Test
-    public void createRecipe() throws Exception {
-        recipeDAO.createRecipe(testRecipe);
-        assertTrue(((TestConnector) connector).isInserted());
-    }
-
-    @Test
-    public void updateRecipe() throws Exception {
-		final RecipeDTO newRecipe = new RecipeDTO(1, "Melt cheese");
-        recipeDAO.updateRecipe(newRecipe);
-        assertTrue(((TestConnector) connector).isUpdated());
-    }
-
-    @Test
-    public void deleteRecipe() throws Exception {
-        recipeDAO.deleteRecipe(testRecipe);
-        assertTrue(((TestConnector) connector).isDeleted());
-    }
 }

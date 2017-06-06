@@ -10,7 +10,7 @@ import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import static org.junit.Assert.assertTrue;
 
 public class MYSQLProductBatchComponentDAOTest {
-    private final ProductBatchComponentDTO testProductBatchComponent = new ProductBatchComponentDTO(1, 1, 0.5, 10, 1);
+    private final ProductBatchComponentDTO testProductBatchComponent = new ProductBatchComponentDTO(1, 1, 0.5, 10);
     private IConnector connector;
     private ProductBatchComponentDAO productBatchComponentDAO;
 
@@ -35,7 +35,7 @@ public class MYSQLProductBatchComponentDAOTest {
 
     @Test(expected = NotImplementedException.class)
     public void updateProductBatchComponent() throws Exception {
-        final ProductBatchComponentDTO newProductBatchComponent = new ProductBatchComponentDTO(1, 1, 0.5, 10, 2);
+        final ProductBatchComponentDTO newProductBatchComponent = new ProductBatchComponentDTO(1, 1, 0.5, 10);
         productBatchComponentDAO.updateProductBatchComponent(newProductBatchComponent);
     }
 
