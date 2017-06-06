@@ -1,4 +1,5 @@
 import ctrl.*;
+import jdbclib.DBConnector;
 import lang.Lang;
 
 import java.io.IOException;
@@ -8,10 +9,12 @@ public class Main {
     private IWeightController weightClient;
     private String input;
     private Scanner scn;
+    private DBConnector dbConnector;
 
     private Main() {
         weightClient = new WeightController();
         scn = new Scanner(System.in);
+        dbConnector = new DBConnector("h12-dev.wiberg.tech",3306,"cdio_final","hold12","2017_h0lD!2");
     }
 
     public static void main(String[] args) {
@@ -50,8 +53,15 @@ public class Main {
                 System.err.println(Lang.msg("exceptionReset"));
             }
 
-            new AuthenticateController().authenticate(weightClient,"12","1234");
-            new BatchController(weightClient, "12", "1234");
+            AuthenticateController auth = new AuthenticateController();
+            int userId, batchId;
+            do {
+                batchId = auth.getBatch(weightClient);
+                userId = auth.getUser(weightClient);
+            }
+            while (!auth.authenticate(dbConnector,weightClient,userId,batchId));
+
+            new BatchController(weightClient, userId, batchId);
 
             try {
                 while(weightClient.rm208("","Press OK to begin anew.", IWeightController.KeyPadState.NUMERIC).equals("RM20 C"));
