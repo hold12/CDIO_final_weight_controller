@@ -1,6 +1,7 @@
 package Weight;
 
 import SimpleTCP.Client.*;
+
 import java.io.IOException;
 
 public class WeightController implements IWeightController {
@@ -14,11 +15,21 @@ public class WeightController implements IWeightController {
     public void connect(String host, int port) throws IOException {
         try {
             tcp.connect(host, port);
-            String rec = tcp.receive(); // Receive initial "I4 A" after power-on
-            System.out.println(rec); //TODO: Remove debug (see above)
+            String rec = receiveMessage(); // Receive initial "I4 A" after power-on
         } catch (IOException e) {
             throw new IOException("Failed to connect to " + host + " on port " + port + ": " + e.getMessage());
         }
+    }
+
+    private void sendMessage(String msg) throws IOException {
+        tcp.send(msg);
+        System.out.println("Sent:\t\t" + msg);
+    }
+
+    private String receiveMessage() throws IOException {
+        String rcv = tcp.receive();
+        System.out.println("Received:\t" + rcv);
+        return rcv;
     }
 
     // S (Receive stable weight)
@@ -27,13 +38,14 @@ public class WeightController implements IWeightController {
         // S S      0.900 kg
         String receivedMessage;
         try {
-            tcp.send("S");
-            receivedMessage = tcp.receive();
+            sendMessage("S");
+            receivedMessage = receiveMessage();
         } catch (IOException e) {
             throw new IOException("Failed to retrieve the current weight: " + e.getMessage());
         }
         receivedMessage = receivedMessage.replace(" kg", "");
-        return receivedMessage.substring(9);
+        receivedMessage = receivedMessage.substring(7);
+        return receivedMessage.trim();
     }
 
     // T (Tare)
@@ -41,26 +53,23 @@ public class WeightController implements IWeightController {
     public String tareWeight() throws IOException {
         String newTare;
         try {
-            tcp.send("T");
-            newTare = tcp.receive();
+            sendMessage("T");
+            newTare = receiveMessage();
             if (!newTare.startsWith("T S")) {
                 throw new IOException(("Failed to tare the weight. Did not receive T S."));
             }
         } catch (IOException e) {
             throw new IOException("Failed to tare the weight: " + e.getMessage());
         }
-        newTare = newTare.replace("T S", "");
-        newTare = newTare.replace("\"", "");
-        newTare = newTare.trim();
-        return newTare;
+        newTare = newTare.replace(" kg", "");
+        return newTare.substring(9);
     }
 
     @Override
     public void cancelCurrentOperation() throws IOException {
         try {
-            tcp.send("@");
-            String tcpRecCan = tcp.receive(); // Receive initial "I4 A" after reset
-            System.out.println(tcpRecCan); //TODO: Remove debug
+            sendMessage("@");
+            String tcpRecCan = receiveMessage(); // Receive initial "I4 A" after reset
             if (!tcpRecCan.startsWith("I4 A")) {
                 throw new IOException("Did not receive expected message after resetting.");
             }
@@ -73,8 +82,8 @@ public class WeightController implements IWeightController {
     @Override
     public void writeToPrimaryDisplay(String message) throws IOException {
         try {
-            tcp.send("D \"" + message + "\"");
-            if (!tcp.receive().equals("D A"))
+            sendMessage("D \"" + message + "\"");
+            if (!receiveMessage().equals("D A"))
                 throw new IOException("Something went wrong when displaying message on the weight.");
         } catch (IOException e) {
             throw new IOException("Failed to send the message: " + e.getMessage());
@@ -85,8 +94,8 @@ public class WeightController implements IWeightController {
     @Override
     public void clearPrimaryDisplay() throws IOException {
         try {
-            tcp.send("DW");
-            if (!tcp.receive().equals("DW A"))
+            sendMessage("DW");
+            if (!receiveMessage().equals("DW A"))
                 throw new IOException("Something went wrong when clearing main display.");
         } catch (IOException e) {
             throw new IOException("Failed to clear primary display: " + e.getMessage());
@@ -98,8 +107,8 @@ public class WeightController implements IWeightController {
         if (message.length() > 30)
             throw new StringIndexOutOfBoundsException("The message must be within 30 characters long.");
         try {
-            tcp.send("P111 \"" + message + "\"");
-            if (!tcp.receive().equals("P111 A"))
+            sendMessage("P111 \"" + message + "\"");
+            if (!receiveMessage().equals("P111 A"))
                 throw new IOException("Something went wrong when writing to the secondary display.");
         } catch (IOException e) {
             throw new IOException("Failed to write to the secondary dispaly: " + e.getMessage());
@@ -109,18 +118,16 @@ public class WeightController implements IWeightController {
     @Override
     public String rm208(String primaryDisplay, String secondaryDisplay, KeyPadState keyPadState) throws IOException, StringIndexOutOfBoundsException {
         String userMessage;
+        if (primaryDisplay.length() > 7)
+            throw new StringIndexOutOfBoundsException("The message to the primary display must be within 7 characters long.");
         if (secondaryDisplay.length() > 30)
             throw new StringIndexOutOfBoundsException("The message to the secondary display must be within 30 characters long.");
         try {
-            String tmp = "RM20 8 \"" + secondaryDisplay + "\" \"\" \"" + keyPadState + "\"";
-            System.out.println("Start :" + tmp + ": slut");
-            tcp.send(tmp);
-            String tcpRecRm = tcp.receive();
-            System.out.println(tcpRecRm);
+            sendMessage("RM20 8 \"" + secondaryDisplay + "\" \"" + primaryDisplay + "\" \"" + keyPadState + "\"");
+            String tcpRecRm = receiveMessage();
             if (!tcpRecRm.equals("RM20 B"))
                 throw new IOException("Something went wrong when receiving RM20 B message from the weight.");
-            userMessage = tcp.receive();
-            System.out.println(userMessage);
+            userMessage = receiveMessage();
             userMessage = userMessage.replace("RM20 A \"", "");
             userMessage = userMessage.replace("\"", "");
         } catch (IOException e) {
@@ -132,7 +139,7 @@ public class WeightController implements IWeightController {
     @Override
     public void setNewGrossWeight(double newWeight) throws IOException {
         try {
-            tcp.send("B " + newWeight);
+            sendMessage("B " + newWeight);
             // TODO: Server does not send anything back, but should it not do so??
         } catch (IOException e) {
             throw new IOException("Could send set new gross value: " + e.getMessage());
@@ -142,7 +149,7 @@ public class WeightController implements IWeightController {
     @Override
     public void close() throws IOException {
         try {
-            tcp.send("Q");
+            sendMessage("Q");
             tcp.close();
         } catch (IOException e) {
             throw new IOException("Could not close the connection: " + e.getMessage());
