@@ -35,21 +35,7 @@ public class AuthenticateController {
     }
 
     public boolean authenticate(IConnector connector, IWeightController weightClient, int userId, int batchId) {
-        UserDAO userDAO = new UserDAO(connector);
-        UserDTO user = null;
-        try {
-            user = userDAO.getUser(userId);
-            System.out.println(user);
-        } catch (DALException e) {
-            System.err.println(Lang.msg("errNotAuthenticated"));
-            try {
-                weightClient.rm208(Lang.msg("err"), Lang.msg("errNoSuchUser"), IWeightController.KeyPadState.LOWER_CHARS);
-            } catch (IOException e2) {
-                System.err.println(e2.getMessage());
-            }
-            return false;
-        }
-
+        //Find productbatch in database
         ProductBatchDAO productBatchDAO = new ProductBatchDAO(connector);
         ProductBatchDTO productBatch = null;
         try {
@@ -59,6 +45,33 @@ public class AuthenticateController {
             System.err.println(Lang.msg("errNotAuthenticated"));
             try {
                 weightClient.rm208(Lang.msg("err"), Lang.msg("errNoBatch"), IWeightController.KeyPadState.LOWER_CHARS);
+            } catch (IOException e2) {
+                System.err.println(e2.getMessage());
+            }
+            return false;
+        }
+
+        //Is user id on productbatch same as entered user id?
+        if(productBatch.getUserId() != userId){
+            System.err.println(Lang.msg("errNotAuthenticated"));
+            try {
+                weightClient.rm208(Lang.msg("err"), Lang.msg("errNotAuthenticated"), IWeightController.KeyPadState.LOWER_CHARS);
+            } catch (IOException e2) {
+                System.err.println(e2.getMessage());
+            }
+            return false;
+        }
+
+        //Find user in database
+        UserDAO userDAO = new UserDAO(connector);
+        UserDTO user = null;
+        try {
+            user = userDAO.getUser(userId);
+            System.out.println(user);
+        } catch (DALException e) {
+            System.err.println(Lang.msg("errNotAuthenticated"));
+            try {
+                weightClient.rm208(Lang.msg("err"), Lang.msg("errNoSuchUser"), IWeightController.KeyPadState.LOWER_CHARS);
             } catch (IOException e2) {
                 System.err.println(e2.getMessage());
             }
@@ -79,6 +92,7 @@ public class AuthenticateController {
 
         if (!userInput.equals("Y")) return false;
 
+        // Verify Batch
         RecipeDAO recipeDAO = new RecipeDAO(connector);
         RecipeDTO recipe = null;
         try {
@@ -87,7 +101,6 @@ public class AuthenticateController {
             e.printStackTrace();
         }
 
-        // Verify Batch
         try {
             userInput = weightClient.rm208(
                     "Y or N",
