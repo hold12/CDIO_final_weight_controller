@@ -1,8 +1,10 @@
 import ctrl.*;
+import jdbclib.DALException;
 import jdbclib.DBConnector;
 import lang.Lang;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
@@ -15,6 +17,15 @@ public class Main {
         weightClient = new WeightController();
         scn = new Scanner(System.in);
         dbConnector = new DBConnector("h12-dev.wiberg.tech",3306,"cdio_final","hold12","2017_h0lD!2");
+        try {
+            dbConnector.connectToDatabase();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (DALException e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {
