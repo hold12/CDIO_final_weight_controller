@@ -17,14 +17,11 @@ public class Main {
     private Main() {
         weightClient = new WeightController();
         scn = new Scanner(System.in);
-        dbConnector = new DBConnector(
-                new DatabaseConnection(
-                        "h12-dev.wiberg.tech",
-                        3306,
-                        "cdio_final",
-                        "hold12",
-                        "2017_h0lD!2"
-                ));
+        try {
+            dbConnector = new DBConnector(new DatabaseConnection());
+        } catch (IOException e) {
+            System.err.println(".env file not found.");
+        }
         try {
             dbConnector.connectToDatabase();
         } catch (ClassNotFoundException e) {
@@ -80,7 +77,8 @@ public class Main {
             }
             while (!auth.authenticate(dbConnector,weightClient,userId,batchId));
 
-            new BatchController(weightClient, userId, batchId);
+            BatchController batchCtrl = new BatchController(dbConnector, weightClient);
+            batchCtrl.batch(batchId);
 
             try {
                 while(weightClient.rm208("","Press OK to begin anew.", IWeightController.KeyPadState.NUMERIC).equals("RM20 C"));
