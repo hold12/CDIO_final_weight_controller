@@ -1,6 +1,7 @@
 import ctrl.*;
 import jdbclib.DALException;
 import jdbclib.DBConnector;
+import jdbclib.DatabaseConnection;
 import lang.Lang;
 
 import java.io.IOException;
@@ -16,7 +17,14 @@ public class Main {
     private Main() {
         weightClient = new WeightController();
         scn = new Scanner(System.in);
-        dbConnector = new DBConnector("h12-dev.wiberg.tech",3306,"cdio_final","hold12","2017_h0lD!2");
+        dbConnector = new DBConnector(
+                new DatabaseConnection(
+                        "h12-dev.wiberg.tech",
+                        3306,
+                        "cdio_final",
+                        "hold12",
+                        "2017_h0lD!2"
+                ));
         try {
             dbConnector.connectToDatabase();
         } catch (ClassNotFoundException e) {

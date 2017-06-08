@@ -81,10 +81,14 @@ public class AuthenticateController {
         String userInput = "";
 
         // Verify Username
+        String userName = user.getFirstname() + " " + user.getLastname();
+        if (userName.length() > 30)
+            userName = userName.substring(0,30);
+
         try {
             userInput = weightClient.rm208(
                     "Y or N",
-                    (user.getFirstname() + " " + user.getLastname()).substring(0,30),
+                    userName,
                     IWeightController.KeyPadState.UPPER_CHARS);
         } catch (IOException e) {
             System.err.println(Lang.msg("exceptionRM208"));
@@ -101,10 +105,14 @@ public class AuthenticateController {
             e.printStackTrace();
         }
 
+        String recipeName = recipe.getRecipeName();
+        if (recipeName.length() > 30)
+            recipeName = recipeName.substring(0,30);
+
         try {
             userInput = weightClient.rm208(
                     "Y or N",
-                    recipe.getRecipeName().substring(0,30),
+                    recipeName,
                     IWeightController.KeyPadState.UPPER_CHARS);
         } catch (IOException e) {
             System.err.println(Lang.msg("exceptionRM208"));
