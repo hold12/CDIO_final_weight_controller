@@ -18,14 +18,15 @@ public class TestConnector implements IConnector {
     private boolean updated;
     private boolean deleted;
 
-    public TestConnector() throws SQLException{
+    public TestConnector() throws SQLException {
         this.selected = false;
         this.inserted = false;
         this.updated = false;
         this.deleted = false;
 
         mockery.checking(new Expectations() {{
-            allowing(resultSet).first(); will(returnValue(true));
+            allowing(resultSet).first();
+            will(returnValue(true));
         }});
     }
 
@@ -57,15 +58,15 @@ public class TestConnector implements IConnector {
                 ProductBatchComponentDTO productBatchComponentDTO = new ProductBatchComponentDTO(1, 1, 0.5, 10);
                 // Insert an ingredient to the ResultSet
                 insertProductBatchComponentResultSet(productBatchComponentDTO);
-            } else if(cmd.contains("from view_recipecomponent")){
-                RecipeComponentDTO recipeComponentDTO = new RecipeComponentDTO(1,2, 1.2, 1.2);
+            } else if (cmd.contains("from view_recipecomponent")) {
+                RecipeComponentDTO recipeComponentDTO = new RecipeComponentDTO(1, 2, 1.2, 1.2);
                 insertRecipeComponentResultSet(recipeComponentDTO);
             } else if (cmd.contains("from view_recipe")) {
                 RecipeDTO recipeDTO = new RecipeDTO(1, "pizza");
                 // Insert a recipe to the ResultSet
                 insertRecipeResultSet(recipeDTO);
             } else if (cmd.contains("from view_productbatch")) {
-                ProductBatchDTO productBatchDTO = new ProductBatchDTO(1, 0, 1,1);
+                ProductBatchDTO productBatchDTO = new ProductBatchDTO(1, null, null, 0, 1, 1);
                 // Insert an productbatch to the ResultSet
                 insertProductBatchResultSet(productBatchDTO);
             }
@@ -94,12 +95,18 @@ public class TestConnector implements IConnector {
     private void insertUserResultSet(UserDTO user) throws DALException {
         try {
             mockery.checking(new Expectations() {{
-                allowing(resultSet).getInt("user_id");           will(returnValue(user.getUserId()));
-                allowing(resultSet).getString("user_firstname"); will(returnValue(user.getFirstname()));
-                allowing(resultSet).getString("user_lastname");  will(returnValue(user.getLastname()));
-                allowing(resultSet).getString("initials");           will(returnValue(user.getInitials()));
-                allowing(resultSet).getString("password");           will(returnValue(user.getPassword()));
-                allowing(resultSet).getBoolean("is_active");         will(returnValue(user.isActive()));
+                allowing(resultSet).getInt("user_id");
+                will(returnValue(user.getUserId()));
+                allowing(resultSet).getString("user_firstname");
+                will(returnValue(user.getFirstname()));
+                allowing(resultSet).getString("user_lastname");
+                will(returnValue(user.getLastname()));
+                allowing(resultSet).getString("initials");
+                will(returnValue(user.getInitials()));
+                allowing(resultSet).getString("password");
+                will(returnValue(user.getPassword()));
+                allowing(resultSet).getBoolean("is_active");
+                will(returnValue(user.isActive()));
             }});
         } catch (SQLException e) {
             throw new DALException(e);
@@ -109,9 +116,12 @@ public class TestConnector implements IConnector {
     private void insertIngredientBatchResultSet(IngredientBatchDTO ingredientBatch) throws DALException {
         try {
             mockery.checking(new Expectations() {{
-                allowing(resultSet).getInt("ingredientbatch_id"); will(returnValue(1));
-                allowing(resultSet).getInt("ingredient_id");      will(returnValue(2));
-                allowing(resultSet).getDouble("amount");          will(returnValue(3.4));
+                allowing(resultSet).getInt("ingredientbatch_id");
+                will(returnValue(1));
+                allowing(resultSet).getInt("ingredient_id");
+                will(returnValue(2));
+                allowing(resultSet).getDouble("amount");
+                will(returnValue(3.4));
             }});
         } catch (SQLException e) {
             throw new DALException(e);
@@ -121,9 +131,12 @@ public class TestConnector implements IConnector {
     private void insertIngredientResultSet(IngredientDTO ingredient) throws DALException {
         try {
             mockery.checking(new Expectations() {{
-                allowing(resultSet).getInt("ingredient_id");      will(returnValue(ingredient.getIngredientId()));
-                allowing(resultSet).getString("ingredient_name"); will(returnValue(ingredient.getIngredientName()));
-                allowing(resultSet).getString("supplier");        will(returnValue(ingredient.getSupplier()));
+                allowing(resultSet).getInt("ingredient_id");
+                will(returnValue(ingredient.getIngredientId()));
+                allowing(resultSet).getString("ingredient_name");
+                will(returnValue(ingredient.getIngredientName()));
+                allowing(resultSet).getString("supplier");
+                will(returnValue(ingredient.getSupplier()));
             }});
         } catch (SQLException e) {
             throw new DALException(e);
@@ -133,10 +146,14 @@ public class TestConnector implements IConnector {
     private void insertProductBatchComponentResultSet(ProductBatchComponentDTO productBatchComponent) throws DALException {
         try {
             mockery.checking(new Expectations() {{
-                allowing(resultSet).getInt("productbatch_id");    will(returnValue(productBatchComponent.getProductbatchId()));
-                allowing(resultSet).getInt("ingredientbatch_id"); will(returnValue(productBatchComponent.getIngredientbatchId()));
-                allowing(resultSet).getDouble("tare");            will(returnValue(productBatchComponent.getTare()));
-                allowing(resultSet).getDouble("net_weight");      will(returnValue(productBatchComponent.getNetWeight()));
+                allowing(resultSet).getInt("productbatch_id");
+                will(returnValue(productBatchComponent.getProductbatchId()));
+                allowing(resultSet).getInt("ingredientbatch_id");
+                will(returnValue(productBatchComponent.getIngredientbatchId()));
+                allowing(resultSet).getDouble("tare");
+                will(returnValue(productBatchComponent.getTare()));
+                allowing(resultSet).getDouble("net_weight");
+                will(returnValue(productBatchComponent.getNetWeight()));
             }});
         } catch (SQLException e) {
             throw new DALException(e);
@@ -146,21 +163,27 @@ public class TestConnector implements IConnector {
     private void insertRecipeResultSet(RecipeDTO recipe) throws DALException {
         try {
             mockery.checking(new Expectations() {{
-                allowing(resultSet).getInt("recipe_id");        will(returnValue((recipe.getRecipeId())));
-                allowing(resultSet).getString("recipe_name");   will(returnValue((recipe.getRecipeName())));
+                allowing(resultSet).getInt("recipe_id");
+                will(returnValue((recipe.getRecipeId())));
+                allowing(resultSet).getString("recipe_name");
+                will(returnValue((recipe.getRecipeName())));
             }});
         } catch (SQLException e) {
             throw new DALException(e);
         }
     }
 
-    private void insertRecipeComponentResultSet(RecipeComponentDTO recipeComponent) throws DALException{
+    private void insertRecipeComponentResultSet(RecipeComponentDTO recipeComponent) throws DALException {
         try {
             mockery.checking(new Expectations() {{
-                allowing(resultSet).getInt("recipe_id");               will(returnValue(recipeComponent.getRecipeId()));
-                allowing(resultSet).getInt("ingredient_id");           will(returnValue(recipeComponent.getIngredientId()));
-                allowing(resultSet).getDouble("nominated_net_weight"); will(returnValue(recipeComponent.getNominatedNetWeight()));
-                allowing(resultSet).getDouble("tolerance");            will(returnValue(recipeComponent.getTolerance()));
+                allowing(resultSet).getInt("recipe_id");
+                will(returnValue(recipeComponent.getRecipeId()));
+                allowing(resultSet).getInt("ingredient_id");
+                will(returnValue(recipeComponent.getIngredientId()));
+                allowing(resultSet).getDouble("nominated_net_weight");
+                will(returnValue(recipeComponent.getNominatedNetWeight()));
+                allowing(resultSet).getDouble("tolerance");
+                will(returnValue(recipeComponent.getTolerance()));
             }});
         } catch (SQLException e) {
             throw new DALException(e);
@@ -170,17 +193,31 @@ public class TestConnector implements IConnector {
     private void insertProductBatchResultSet(ProductBatchDTO productBatch) throws DALException {
         try {
             mockery.checking(new Expectations() {{
-                allowing(resultSet).getInt("productbatch_id");  will(returnValue(productBatch.getProductbatchId()));
-                allowing(resultSet).getInt("status");           will(returnValue(productBatch.getStatus()));
-                allowing(resultSet).getInt("recipe_id");        will(returnValue(productBatch.getRecipeId()));
+                allowing(resultSet).getInt("productbatch_id");
+                will(returnValue(productBatch.getProductbatchId()));
+                allowing(resultSet).getInt("status");
+                will(returnValue(productBatch.getStatus()));
+                allowing(resultSet).getInt("recipe_id");
+                will(returnValue(productBatch.getRecipeId()));
             }});
         } catch (SQLException e) {
             throw new DALException(e);
         }
     }
 
-    public boolean isSelected() { return selected; }
-    public boolean isInserted() { return inserted; }
-    public boolean isUpdated() { return updated; }
-    public boolean isDeleted() { return deleted; }
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public boolean isInserted() {
+        return inserted;
+    }
+
+    public boolean isUpdated() {
+        return updated;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
 }

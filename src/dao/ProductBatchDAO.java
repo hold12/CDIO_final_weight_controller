@@ -64,17 +64,30 @@ public class ProductBatchDAO implements IProductBatchDAO {
 
         return list;
     }
+
     @Override
     public void updateProductBatch(ProductBatchDTO productBatch) throws DALException {
-        connector.update(Queries.getFormatted(
-                "productbatch.update",
-                Integer.toString(productBatch.getProductbatchId()),
-                productBatch.getCreatedTime().toString(),
-                productBatch.getFinishedTime().toString(),
-                Integer.toString(productBatch.getStatus()),
-                Integer.toString(productBatch.getRecipeId()),
-                Integer.toString(productBatch.getUserId())
-        ));
+        //@TODO Do something here, so NULL can be passed to SQL
+        if(productBatch.getFinishedTime() == null) {
+            connector.update(Queries.getFormatted(
+                    "productbatch.update.null",
+                    Integer.toString(productBatch.getProductbatchId()),
+                    productBatch.getCreatedTime().toString(),
+                    Integer.toString(productBatch.getStatus()),
+                    Integer.toString(productBatch.getRecipeId()),
+                    Integer.toString(productBatch.getUserId())
+            ));
+        } else {
+            connector.update(Queries.getFormatted(
+                    "productbatch.update",
+                    Integer.toString(productBatch.getProductbatchId()),
+                    productBatch.getCreatedTime().toString(),
+                    productBatch.getFinishedTime().toString(),
+                    Integer.toString(productBatch.getStatus()),
+                    Integer.toString(productBatch.getRecipeId()),
+                    Integer.toString(productBatch.getUserId())
+            ));
+        }
     }
 
 }
