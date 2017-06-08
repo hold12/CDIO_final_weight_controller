@@ -20,11 +20,10 @@ public class BatchController {
         this.weightCtrl = weightClient;
     }
 
-    public boolean batch(int batchId) throws DALException {
+    public boolean batch(ProductBatchDTO productBatch) throws DALException {
         productBatchComponents = new LinkedList<>();
 
         // Get productbatch and recipecomponents
-        ProductBatchDTO productBatch = new ProductBatchDAO(connector).getProductBatch(batchId);
         List<RecipeComponentDTO> recipeComponents = new RecipeComponentDAO(connector).getRecipeComponentList(productBatch.getRecipeId());
 
         // Go through every recipe component
@@ -38,17 +37,13 @@ public class BatchController {
             do {
                 try {
                     isSuccess = batchComponentCtrl.batchComponent(productBatch, recipeComponent, ingredient);
-                } catch (IllegalStateException | IOException e) {
+                } catch (IllegalStateException | IOException | DALException e) {
                     //Update productbatch status = 0
                     productBatch.setStatus(0);
                     new ProductBatchDAO(connector).updateProductBatch(productBatch);
                     return false;
                 }
             } while (!isSuccess);
-
-            //Update productbatch status = 1
-            productBatch.setStatus(1);
-            new ProductBatchDAO(connector).updateProductBatch(productBatch);
 
             // Add product batch component to list
             productBatchComponents.add(batchComponentCtrl.getProductBatchComponent());

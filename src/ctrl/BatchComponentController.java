@@ -1,13 +1,13 @@
 package ctrl;
 
 import dao.IngredientBatchDAO;
+import dao.ProductBatchDAO;
 import dto.*;
 import jdbclib.DALException;
 import jdbclib.IConnector;
 import lang.Lang;
 
 import java.io.IOException;
-import java.util.List;
 
 /**
  * Created by freya on 06-06-2017.
@@ -26,28 +26,18 @@ public class BatchComponentController {
         return productBatchComponent;
     }
 
-    public boolean batchComponent(ProductBatchDTO productBatch, RecipeComponentDTO recipeComponent, IngredientDTO ingredient) throws IOException, IllegalStateException {
+    public boolean batchComponent(ProductBatchDTO productBatch, RecipeComponentDTO recipeComponent, IngredientDTO ingredient) throws IOException, IllegalStateException, DALException {
         String userInput;
         productBatchComponent = new ProductBatchComponentDTO(productBatch.getProductbatchId(), 0, 0, 0);
-
-        // Find ingredient batch
-        IngredientBatchDTO ingredientBatch = getIngredientBatch(ingredient, recipeComponent);
-
-        // If no ingredient batch
-        if (ingredientBatch == null) {
-            rm208("", ingredient.getIngredientId() + ": " + Lang.msg("errNoIngredientBatch"), IWeightController.KeyPadState.UPPER_CHARS);
-            return false;
-        }
-
-        productBatchComponent.setIngredientbatchId(ingredientBatch.getIngredientBatchId());
-
-        // Verify ingredient
-        userInput = rm208("" + ingredientBatch.getIngredientBatchId(), ingredient.getIngredientName(), IWeightController.KeyPadState.UPPER_CHARS);
-        if (userInput.startsWith("RM20 C")) throw new IllegalStateException("User cancelled operation");
 
         // Unloaded
         userInput = rm208("", Lang.msg("unloaded"), IWeightController.KeyPadState.UPPER_CHARS);
         if (userInput.startsWith("RM20 C")) throw new IllegalStateException("User cancelled operation");
+        weightCtrl.tareWeight();
+
+        //Update productbatch status = 1
+        productBatch.setStatus(1);
+        new ProductBatchDAO(connector).updateProductBatch(productBatch);
 
         // Place tara
         userInput = rm208("", Lang.msg("placeTare"), IWeightController.KeyPadState.UPPER_CHARS);
@@ -55,6 +45,13 @@ public class BatchComponentController {
 
         float tareWeight = stof(weightCtrl.tareWeight());
         productBatchComponent.setTare(tareWeight);
+
+        // Enter ingredient batch
+        IngredientBatchDTO ingredientBatch;
+        do {
+            ingredientBatch = getIngredientBatch(ingredient.getIngredientName(),recipeComponent);
+        } while (ingredientBatch == null);
+        productBatchComponent.setIngredientbatchId(ingredientBatch.getIngredientBatchId());
 
         // Place ingredient
         userInput = rm208("" + ingredientBatch.getIngredientBatchId(), Lang.msg("place") + " " + ingredient.getIngredientName(), IWeightController.KeyPadState.UPPER_CHARS);
@@ -65,8 +62,7 @@ public class BatchComponentController {
 
         if (netWeight > recipeComponent.getNominatedNetWeight() + recipeComponent.getTolerance()
                 || netWeight < recipeComponent.getNominatedNetWeight() - recipeComponent.getTolerance()) {
-            weightCtrl.writeToPrimaryDisplay("TareErr");
-            weightCtrl.writeToSecondaryDisplay(Lang.msg("errTareControl"));
+            weightCtrl.writeToSecondaryDisplay(Lang.msg("errWeight"));
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
@@ -79,11 +75,10 @@ public class BatchComponentController {
         userInput = rm208("", Lang.msg("removeall"), IWeightController.KeyPadState.UPPER_CHARS);
         if (userInput.startsWith("RM20 C")) throw new IllegalStateException("User cancelled operation");
 
-        float removedWeight = 0;
-        removedWeight = stof(weightCtrl.getCurrentWeight());
+        float removedWeight = stof(weightCtrl.getCurrentWeight());
 
         // Taring control
-        if (removedWeight >= ((-tareWeight) + 0.002) && removedWeight <= ((-tareWeight) - 0.002)) {
+        if (removedWeight >= ((-tareWeight) - 0.002) && removedWeight <= ((-tareWeight) + 0.002)) {
             weightCtrl.writeToPrimaryDisplay("OK");
             try {
                 Thread.sleep(1000);
@@ -104,22 +99,24 @@ public class BatchComponentController {
         return true;
     }
 
-    private IngredientBatchDTO getIngredientBatch(IngredientDTO ingredient, RecipeComponentDTO recipeComponent) {
-        List<IngredientBatchDTO> ingredientBatches;
+    private IngredientBatchDTO getIngredientBatch(String ingredientName,RecipeComponentDTO recipeComponent) throws IOException {
+        String userInput;
         IngredientBatchDTO ingredientBatch = null;
-
+        String ingredientBatchId = rm208(Lang.msg("id"), Lang.msg("enterIngredientBatchId") + ": " + ingredientName, IWeightController.KeyPadState.NUMERIC);
         try {
-            ingredientBatches = new IngredientBatchDAO(connector).getIngredientBatchList(ingredient.getIngredientId());
+            ingredientBatch = new IngredientBatchDAO(connector).getIngredientBatch(Integer.parseInt(ingredientBatchId));
         } catch (DALException e) {
-            e.printStackTrace();
-            return null;
+            weightCtrl.rm208(Lang.msg("err"), Lang.msg("errNoIngredientBatch"), IWeightController.KeyPadState.UPPER_CHARS);
         }
 
-        for (IngredientBatchDTO i : ingredientBatches) {
-            if (i.getAmount() >= recipeComponent.getNominatedNetWeight()) {
-                ingredientBatch = i;
-                break;
-            }
+        if (ingredientBatch.getIngredientId() != recipeComponent.getIngredientId()){
+            ingredientBatch = null;
+            userInput = rm208("", Lang.msg("errNoIngredientBatch"), IWeightController.KeyPadState.UPPER_CHARS);
+            if (userInput.startsWith("RM20 C")) throw new IllegalStateException("User cancelled operation");
+        } else if (ingredientBatch.getAmount() < recipeComponent.getNominatedNetWeight()){
+            ingredientBatch = null;
+            userInput = rm208("", Lang.msg("errStockNotSufficient"), IWeightController.KeyPadState.UPPER_CHARS);
+            if (userInput.startsWith("RM20 C")) throw new IllegalStateException("User cancelled operation");
         }
 
         return ingredientBatch;

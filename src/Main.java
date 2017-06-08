@@ -1,4 +1,6 @@
 import ctrl.*;
+import dto.ProductBatchDTO;
+import dto.UserDTO;
 import jdbclib.DALException;
 import jdbclib.DBConnector;
 import jdbclib.DatabaseConnection;
@@ -51,21 +53,22 @@ public class Main {
         }
 
         AuthenticateController auth = new AuthenticateController(dbConnector, weightClient);
-        int userId, batchId;
+        UserDTO user;
+        ProductBatchDTO productBatch;
         try {
             do {
-                batchId = auth.getBatch();
-                userId = auth.getUser();
+                user = auth.getUser();
+                productBatch = auth.getBatch();
             }
-            while (!auth.authenticate(userId, batchId));
-        } catch (IOException e) {
+            while (!auth.authenticate(user.getUserId(), productBatch));
+        } catch (IOException | DALException e) {
             e.printStackTrace();
             return;
         }
 
         BatchController batchCtrl = new BatchController(dbConnector, weightClient);
         try {
-            batchCtrl.batch(batchId);
+            batchCtrl.batch(productBatch);
         } catch (DALException e) {
             e.printStackTrace();
             return;
