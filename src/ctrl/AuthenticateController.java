@@ -33,7 +33,7 @@ public class AuthenticateController {
             System.out.println(productBatch);
         } catch (DALException e) {
             System.err.println(Lang.msg("errNotAuthenticated"));
-            weightCtrl.rm208(Lang.msg("err"), Lang.msg("errNoBatch"), IWeightController.KeyPadState.LOWER_CHARS);
+            weightCtrl.rm208(Lang.msg("err"), Lang.msg("errNoBatch"), IWeightController.KeyPadState.NUMERIC);
             throw new IllegalStateException(Lang.msg("errNoBatch"));
         }
 
@@ -45,7 +45,7 @@ public class AuthenticateController {
         if (recipeName.length() > 30)
             recipeName = recipeName.substring(0, 30);
 
-        userInput = weightCtrl.rm208("", recipeName, IWeightController.KeyPadState.UPPER_CHARS);
+        userInput = weightCtrl.rm208("", recipeName, IWeightController.KeyPadState.NUMERIC);
         if (userInput.startsWith("RM20 C")) throw new IllegalStateException(Lang.msg("errNotAuthenticated"));
 
         return productBatch;
@@ -62,7 +62,7 @@ public class AuthenticateController {
             System.out.println(user);
         } catch (DALException e) {
             System.err.println(Lang.msg("errNotAuthenticated"));
-            weightCtrl.rm208(Lang.msg("err"), Lang.msg("errNoSuchUser"), IWeightController.KeyPadState.LOWER_CHARS);
+            weightCtrl.rm208(Lang.msg("err"), Lang.msg("errNoSuchUser"), IWeightController.KeyPadState.NUMERIC);
             throw new IllegalStateException(Lang.msg("errNoSuchUser"));
         }
 
@@ -73,7 +73,7 @@ public class AuthenticateController {
         if (userName.length() > 30)
             userName = userName.substring(0, 30);
 
-        userInput = weightCtrl.rm208("", userName, IWeightController.KeyPadState.UPPER_CHARS);
+        userInput = weightCtrl.rm208("", userName, IWeightController.KeyPadState.NUMERIC);
         if (userInput.startsWith("RM20 C")) throw new IllegalStateException(Lang.msg("errNotAuthenticated"));
 
         return user;
@@ -82,14 +82,14 @@ public class AuthenticateController {
     public boolean authenticate(int userId, ProductBatchDTO productBatch) throws IOException, IllegalStateException {
         // Is productbatch already done?
         if (productBatch.getStatus() == 2) {
-            weightCtrl.rm208(Lang.msg("err"), Lang.msg("errBatchStatus"), IWeightController.KeyPadState.LOWER_CHARS);
+            weightCtrl.rm208(Lang.msg("err"), Lang.msg("errBatchStatus"), IWeightController.KeyPadState.NUMERIC);
             return false;
         }
 
         // Is user id on productbatch same as entered user id?
         if (productBatch.getUserId() != userId) {
             System.err.println(Lang.msg("errNotAuthenticated"));
-            weightCtrl.rm208(Lang.msg("err"), Lang.msg("errNotAuthenticated"), IWeightController.KeyPadState.LOWER_CHARS);
+            weightCtrl.rm208(Lang.msg("err"), Lang.msg("errNotAuthenticated"), IWeightController.KeyPadState.NUMERIC);
             return false;
         }
 
