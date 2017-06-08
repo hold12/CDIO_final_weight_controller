@@ -24,13 +24,12 @@ public class Main {
         }
         try {
             dbConnector.connectToDatabase();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (DALException e) {
+        } catch (ClassNotFoundException | SQLException | DALException e ) {
             e.printStackTrace();
         }
+
+        if (!new ConnectionController().connect(weightClient, "localhost", 8000))
+            System.exit(1);
     }
 
     public static void main(String[] args) {
@@ -40,64 +39,44 @@ public class Main {
         Lang.setLanguage(locale);
 
         Main main = new Main();
-        main.startProgram();
+        while (true)
+            main.startProgram();
     }
 
     private void startProgram() {
-        while (true) {
-            System.out.print("start> ");
-            input = scn.nextLine().toLowerCase();
-            String[] arguments = input.split(" ");
-
-            if (arguments.length != 3)
-                System.err.println(Lang.msg("errConnectMain"));
-
-            if (input.startsWith("connect")) {
-                if (!new ConnectionController().connect(weightClient, arguments[1], stoi(arguments[2])))
-                    System.exit(1);
-                break;
-            } else {
-                System.err.println(Lang.msg("errCmdNotFound"));
-            }
+        try {
+            weightClient.cancelCurrentOperation();
+        } catch (IOException e) {
+            System.err.println(Lang.msg("exceptionReset"));
         }
 
-        while (true) {
-            try {
-                weightClient.cancelCurrentOperation();
-            } catch (IOException e) {
-                System.err.println(Lang.msg("exceptionReset"));
-            }
-
-            AuthenticateController auth = new AuthenticateController(dbConnector, weightClient);
-            int userId, batchId;
+        AuthenticateController auth = new AuthenticateController(dbConnector, weightClient);
+        int userId, batchId;
+        try {
             do {
                 batchId = auth.getBatch();
                 userId = auth.getUser();
             }
             while (!auth.authenticate(userId, batchId));
-
-            BatchController batchCtrl = new BatchController(dbConnector, weightClient);
-            try {
-                batchCtrl.batch(batchId);
-            } catch (DALException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                while (weightClient.rm208("", "Press OK to begin anew.", IWeightController.KeyPadState.NUMERIC).equals("RM20 C"))
-                    ;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
         }
-    }
 
-    private static int stoi(String str) {
+        BatchController batchCtrl = new BatchController(dbConnector, weightClient);
         try {
-            return Integer.parseInt(str);
-        } catch (Exception e) {
-            System.err.println(Lang.msg("errSTOI") + "!");
-            return -1;
+            batchCtrl.batch(batchId);
+        } catch (DALException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        try {
+            while (weightClient.rm208("", "Press OK to begin anew.", IWeightController.KeyPadState.NUMERIC).equals("RM20 C"))
+                ;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
         }
     }
 }

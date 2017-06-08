@@ -68,6 +68,7 @@ public class ProductBatchDAO implements IProductBatchDAO {
     @Override
     public void updateProductBatch(ProductBatchDTO productBatch) throws DALException {
         //@TODO Do something here, so NULL can be passed to SQL
+        //@TODO Describe in report what we have done here and why
         if(productBatch.getFinishedTime() == null) {
             connector.update(Queries.getFormatted(
                     "productbatch.update.null",

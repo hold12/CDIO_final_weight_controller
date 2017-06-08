@@ -21,28 +21,18 @@ public class AuthenticateController {
         this.weightCtrl = weightCtrl;
     }
 
-    public int getBatch() {
-        String batchIdIn = "";
-        try {
-            batchIdIn = weightCtrl.rm208("Batch", "Type batch id", IWeightController.KeyPadState.NUMERIC);
-        } catch (IOException e) {
-            System.err.println(Lang.msg("exceptionRM208"));
-        }
+    public int getBatch() throws IOException {
+        String batchIdIn = weightCtrl.rm208("Batch", "Type batch id", IWeightController.KeyPadState.NUMERIC);
         return Integer.parseInt(batchIdIn);
     }
 
-    public int getUser() {
-        String userIdIn = "";
-        try {
-            userIdIn = weightCtrl.rm208("User", "Type user id", IWeightController.KeyPadState.NUMERIC);
-        } catch (IOException e) {
-            System.err.println(Lang.msg("exceptionRM208"));
-        }
+    public int getUser() throws IOException {
+        String userIdIn = weightCtrl.rm208("User", "Type user id", IWeightController.KeyPadState.NUMERIC);
         return Integer.parseInt(userIdIn);
     }
 
-    public boolean authenticate(int userId, int batchId) {
-        //Find productbatch in database
+    public boolean authenticate(int userId, int batchId) throws IOException, IllegalStateException {
+        // Find productbatch in database
         ProductBatchDAO productBatchDAO = new ProductBatchDAO(connector);
         ProductBatchDTO productBatch;
         try {
@@ -50,85 +40,60 @@ public class AuthenticateController {
             System.out.println(productBatch);
         } catch (DALException e) {
             System.err.println(Lang.msg("errNotAuthenticated"));
-            try {
-                weightCtrl.rm208(Lang.msg("err"), Lang.msg("errNoBatch"), IWeightController.KeyPadState.LOWER_CHARS);
-            } catch (IOException e2) {
-                System.err.println(e2.getMessage());
-            }
+            weightCtrl.rm208(Lang.msg("err"), Lang.msg("errNoBatch"), IWeightController.KeyPadState.LOWER_CHARS);
             return false;
         }
 
-        //Is user id on productbatch same as entered user id?
+        // Is productbatch already done?
+        if (productBatch.getStatus() == 2) {
+            weightCtrl.rm208(Lang.msg("err"), Lang.msg("errBatchStatus"), IWeightController.KeyPadState.LOWER_CHARS);
+            return false;
+        }
+
+        // Is user id on productbatch same as entered user id?
         if (productBatch.getUserId() != userId) {
             System.err.println(Lang.msg("errNotAuthenticated"));
-            try {
-                weightCtrl.rm208(Lang.msg("err"), Lang.msg("errNotAuthenticated"), IWeightController.KeyPadState.LOWER_CHARS);
-            } catch (IOException e2) {
-                System.err.println(e2.getMessage());
-            }
+            weightCtrl.rm208(Lang.msg("err"), Lang.msg("errNotAuthenticated"), IWeightController.KeyPadState.LOWER_CHARS);
             return false;
         }
 
-        //Find user in database
+        // Find user in database
         UserDAO userDAO = new UserDAO(connector);
-        UserDTO user = null;
+        UserDTO user;
         try {
             user = userDAO.getUser(userId);
             System.out.println(user);
         } catch (DALException e) {
             System.err.println(Lang.msg("errNotAuthenticated"));
-            try {
-                weightCtrl.rm208(Lang.msg("err"), Lang.msg("errNoSuchUser"), IWeightController.KeyPadState.LOWER_CHARS);
-            } catch (IOException e2) {
-                System.err.println(e2.getMessage());
-            }
+            weightCtrl.rm208(Lang.msg("err"), Lang.msg("errNoSuchUser"), IWeightController.KeyPadState.LOWER_CHARS);
             return false;
         }
 
-        String userInput = "";
+        String userInput;
 
         // Verify Username
         String userName = user.getFirstname() + " " + user.getLastname();
         if (userName.length() > 30)
             userName = userName.substring(0, 30);
 
-        try {
-            userInput = weightCtrl.rm208(
-                    "",
-                    userName,
-                    IWeightController.KeyPadState.UPPER_CHARS);
-        } catch (IOException e) {
-            System.err.println(Lang.msg("exceptionRM208"));
-        }
-
+        userInput = weightCtrl.rm208("", userName, IWeightController.KeyPadState.UPPER_CHARS);
         if (userInput.startsWith("RM20 C")) return false;
 
-        // Verify Batch
-        RecipeDAO recipeDAO = new RecipeDAO(connector);
+        // Verify Batch recipe name
         RecipeDTO recipe = null;
         try {
-            recipe = recipeDAO.getRecipe(productBatch.getRecipeId());
+            recipe = new RecipeDAO(connector).getRecipe(productBatch.getRecipeId());
         } catch (DALException e) {
             e.printStackTrace();
         }
 
-        //Find recipe name in database
+        // Find recipe name in database
         String recipeName = recipe.getRecipeName();
         if (recipeName.length() > 30)
             recipeName = recipeName.substring(0, 30);
 
-        try {
-            userInput = weightCtrl.rm208(
-                    "",
-                    recipeName,
-                    IWeightController.KeyPadState.UPPER_CHARS);
-        } catch (IOException e) {
-            System.err.println(Lang.msg("exceptionRM208"));
-        }
-
+        userInput = weightCtrl.rm208("", recipeName, IWeightController.KeyPadState.UPPER_CHARS);
         if (userInput.startsWith("RM20 C")) return false;
-
-        //System.out.println("User verified information.");
 
         return true;
     }

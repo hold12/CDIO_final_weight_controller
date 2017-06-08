@@ -5,6 +5,7 @@ import dto.*;
 import jdbclib.DALException;
 import jdbclib.IConnector;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
@@ -37,7 +38,7 @@ public class BatchController {
             do {
                 try {
                     isSuccess = batchComponentCtrl.batchComponent(productBatch, recipeComponent, ingredient);
-                } catch (IllegalStateException e) {
+                } catch (IllegalStateException | IOException e) {
                     //Update productbatch status = 0
                     productBatch.setStatus(0);
                     new ProductBatchDAO(connector).updateProductBatch(productBatch);

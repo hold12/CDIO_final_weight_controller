@@ -26,7 +26,7 @@ public class BatchComponentController {
         return productBatchComponent;
     }
 
-    public boolean batchComponent(ProductBatchDTO productBatch, RecipeComponentDTO recipeComponent, IngredientDTO ingredient) throws IllegalStateException {
+    public boolean batchComponent(ProductBatchDTO productBatch, RecipeComponentDTO recipeComponent, IngredientDTO ingredient) throws IOException, IllegalStateException {
         String userInput;
         productBatchComponent = new ProductBatchComponentDTO(productBatch.getProductbatchId(), 0, 0, 0);
 
@@ -53,34 +53,20 @@ public class BatchComponentController {
         userInput = rm208("", Lang.msg("placeTare"), IWeightController.KeyPadState.UPPER_CHARS);
         if (userInput.startsWith("RM20 C")) throw new IllegalStateException("User cancelled operation");
 
-        float tareWeight = 0;
-        try {
-            tareWeight = stof(weightCtrl.tareWeight());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        float tareWeight = stof(weightCtrl.tareWeight());
         productBatchComponent.setTare(tareWeight);
 
         // Place ingredient
         userInput = rm208("" + ingredientBatch.getIngredientBatchId(), Lang.msg("place") + " " + ingredient.getIngredientName(), IWeightController.KeyPadState.UPPER_CHARS);
         if (userInput.startsWith("RM20 C")) throw new IllegalStateException("User cancelled operation");
 
-        float netWeight = 0;
-        try {
-            netWeight = stof(weightCtrl.getCurrentWeight());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        float netWeight = stof(weightCtrl.getCurrentWeight());
         productBatchComponent.setNetWeight(netWeight);
 
         if (netWeight > recipeComponent.getNominatedNetWeight() + recipeComponent.getTolerance()
                 || netWeight < recipeComponent.getNominatedNetWeight() - recipeComponent.getTolerance()) {
-            try {
-                weightCtrl.writeToPrimaryDisplay("TareErr");
-                weightCtrl.writeToSecondaryDisplay(Lang.msg("errTareControl"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            weightCtrl.writeToPrimaryDisplay("TareErr");
+            weightCtrl.writeToSecondaryDisplay(Lang.msg("errTareControl"));
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
@@ -94,50 +80,39 @@ public class BatchComponentController {
         if (userInput.startsWith("RM20 C")) throw new IllegalStateException("User cancelled operation");
 
         float removedWeight = 0;
-        try {
-            removedWeight = stof(weightCtrl.getCurrentWeight());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        removedWeight = stof(weightCtrl.getCurrentWeight());
 
         // Taring control
         if (removedWeight >= ((-tareWeight) + 0.002) && removedWeight <= ((-tareWeight) - 0.002)) {
+            weightCtrl.writeToPrimaryDisplay("OK");
             try {
-                weightCtrl.writeToPrimaryDisplay("OK");
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } catch (IOException e) {
-                System.err.print(Lang.msg("exceptionMessageDelivery"));
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         } else {
+            weightCtrl.writeToPrimaryDisplay("TareErr");
+            weightCtrl.writeToSecondaryDisplay(Lang.msg("errTareControl"));
             try {
-                weightCtrl.writeToPrimaryDisplay("TareErr");
-                weightCtrl.writeToSecondaryDisplay(Lang.msg("errTareControl"));
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return false;
-            } catch (IOException e) {
-                System.err.print(Lang.msg("exceptionMessageDelivery"));
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+            return false;
         }
 
         return true;
     }
 
     private IngredientBatchDTO getIngredientBatch(IngredientDTO ingredient, RecipeComponentDTO recipeComponent) {
-        List<IngredientBatchDTO> ingredientBatches = null;
+        List<IngredientBatchDTO> ingredientBatches;
         IngredientBatchDTO ingredientBatch = null;
 
         try {
             ingredientBatches = new IngredientBatchDAO(connector).getIngredientBatchList(ingredient.getIngredientId());
         } catch (DALException e) {
             e.printStackTrace();
+            return null;
         }
 
         for (IngredientBatchDTO i : ingredientBatches) {
@@ -150,13 +125,8 @@ public class BatchComponentController {
         return ingredientBatch;
     }
 
-    private String rm208(String primary, String secondary, IWeightController.KeyPadState keyPadState) {
-        try {
-            return weightCtrl.rm208(substring7(primary), substring30(secondary), keyPadState);
-        } catch (IOException e) {
-            System.err.println(Lang.msg("exceptionRM208"));
-        }
-        return null;
+    private String rm208(String primary, String secondary, IWeightController.KeyPadState keyPadState) throws IOException {
+        return weightCtrl.rm208(substring7(primary), substring30(secondary), keyPadState);
     }
 
     private String substring7(String string) {
