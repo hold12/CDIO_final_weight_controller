@@ -87,14 +87,14 @@ public class AuthenticateController {
 
         try {
             userInput = weightClient.rm208(
-                    "Y or N",
+                    "",
                     userName,
                     IWeightController.KeyPadState.UPPER_CHARS);
         } catch (IOException e) {
             System.err.println(Lang.msg("exceptionRM208"));
         }
 
-        if (!userInput.equals("Y")) return false;
+        if (userInput.startsWith("RM20 C")) return false;
 
         // Verify Batch
         RecipeDAO recipeDAO = new RecipeDAO(connector);
@@ -111,14 +111,14 @@ public class AuthenticateController {
 
         try {
             userInput = weightClient.rm208(
-                    "Y or N",
+                    "",
                     recipeName,
                     IWeightController.KeyPadState.UPPER_CHARS);
         } catch (IOException e) {
             System.err.println(Lang.msg("exceptionRM208"));
         }
 
-        if (!userInput.equals("Y")) return false;
+        if (userInput.startsWith("RM20 C")) return false;
 
         //System.out.println("User verified information.");
 
