@@ -22,16 +22,16 @@ public class BatchComponentController {
         this.weightCtrl = weightController;
     }
 
-    public ProductBatchComponentDTO getProductBatchComponent(){
+    public ProductBatchComponentDTO getProductBatchComponent() {
         return productBatchComponent;
     }
 
-    public boolean batchComponent(ProductBatchDTO productBatch, RecipeComponentDTO recipeComponent, IngredientDTO ingredient) throws IllegalStateException{
+    public boolean batchComponent(ProductBatchDTO productBatch, RecipeComponentDTO recipeComponent, IngredientDTO ingredient) throws IllegalStateException {
         String userInput;
         productBatchComponent = new ProductBatchComponentDTO(productBatch.getProductbatchId(), 0, 0, 0);
 
         // Find ingredient batch
-        IngredientBatchDTO ingredientBatch = getIngredientBatch(ingredient,recipeComponent);
+        IngredientBatchDTO ingredientBatch = getIngredientBatch(ingredient, recipeComponent);
 
         // If no ingredient batch
         if (ingredientBatch == null) {
@@ -42,7 +42,7 @@ public class BatchComponentController {
         productBatchComponent.setIngredientbatchId(ingredientBatch.getIngredientBatchId());
 
         // Verify ingredient
-        userInput = rm208(""+ingredientBatch.getIngredientBatchId(), ingredient.getIngredientName(), IWeightController.KeyPadState.UPPER_CHARS);
+        userInput = rm208("" + ingredientBatch.getIngredientBatchId(), ingredient.getIngredientName(), IWeightController.KeyPadState.UPPER_CHARS);
         if (userInput.startsWith("RM20 C")) throw new IllegalStateException("User cancelled operation");
 
         // Unloaded
@@ -61,7 +61,7 @@ public class BatchComponentController {
         }
         productBatchComponent.setTare(tareWeight);
 
-        // Place powder
+        // Place ingredient
         userInput = rm208("" + ingredientBatch.getIngredientBatchId(), Lang.msg("place") + " " + ingredient.getIngredientName(), IWeightController.KeyPadState.UPPER_CHARS);
         if (userInput.startsWith("RM20 C")) throw new IllegalStateException("User cancelled operation");
 
@@ -72,6 +72,22 @@ public class BatchComponentController {
             e.printStackTrace();
         }
         productBatchComponent.setNetWeight(netWeight);
+
+        if (netWeight > recipeComponent.getNominatedNetWeight() + recipeComponent.getTolerance()
+                || netWeight < recipeComponent.getNominatedNetWeight() - recipeComponent.getTolerance()) {
+            try {
+                weightCtrl.writeToPrimaryDisplay("TareErr");
+                weightCtrl.writeToSecondaryDisplay(Lang.msg("errTareControl"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return false;
+        }
 
         // Remove all
         userInput = rm208("", Lang.msg("removeall"), IWeightController.KeyPadState.UPPER_CHARS);
@@ -85,7 +101,7 @@ public class BatchComponentController {
         }
 
         // Taring control
-        if (removedWeight >= ((-tareWeight) * 1.05) && removedWeight <= ((-tareWeight) * 0.95)) {
+        if (removedWeight >= ((-tareWeight) + 0.002) && removedWeight <= ((-tareWeight) - 0.002)) {
             try {
                 weightCtrl.writeToPrimaryDisplay("OK");
                 try {
@@ -114,7 +130,7 @@ public class BatchComponentController {
         return true;
     }
 
-    private IngredientBatchDTO getIngredientBatch(IngredientDTO ingredient, RecipeComponentDTO recipeComponent){
+    private IngredientBatchDTO getIngredientBatch(IngredientDTO ingredient, RecipeComponentDTO recipeComponent) {
         List<IngredientBatchDTO> ingredientBatches = null;
         IngredientBatchDTO ingredientBatch = null;
 
@@ -124,16 +140,17 @@ public class BatchComponentController {
             e.printStackTrace();
         }
 
-        for (IngredientBatchDTO i : ingredientBatches){
+        for (IngredientBatchDTO i : ingredientBatches) {
             if (i.getAmount() >= recipeComponent.getNominatedNetWeight()) {
-                ingredientBatch = i; break;
+                ingredientBatch = i;
+                break;
             }
         }
 
-        return  ingredientBatch;
+        return ingredientBatch;
     }
 
-    private String rm208(String primary, String secondary, IWeightController.KeyPadState keyPadState){
+    private String rm208(String primary, String secondary, IWeightController.KeyPadState keyPadState) {
         try {
             return weightCtrl.rm208(substring7(primary), substring30(secondary), keyPadState);
         } catch (IOException e) {
@@ -142,17 +159,17 @@ public class BatchComponentController {
         return null;
     }
 
-    private String substring7(String string){
-        if (string.length() > 7){
-            return string.substring(0,7);
+    private String substring7(String string) {
+        if (string.length() > 7) {
+            return string.substring(0, 7);
         } else {
             return string;
         }
     }
 
-    private String substring30(String string){
-        if (string.length() > 30){
-            return string.substring(0,30);
+    private String substring30(String string) {
+        if (string.length() > 30) {
+            return string.substring(0, 30);
         } else {
             return string;
         }
