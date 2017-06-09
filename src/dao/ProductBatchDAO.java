@@ -25,6 +25,7 @@ public class ProductBatchDAO implements IProductBatchDAO {
             if (!rs.first()) throw new DALException("The productbatch " + productbatchId + " does not exist.");
             return new ProductBatchDTO(
                     rs.getInt("productbatch_id"),
+                    rs.getTimestamp("created_time"),
                     rs.getTimestamp("finished_time"),
                     rs.getInt("status"),
                     rs.getInt("recipe_id"),
@@ -43,6 +44,7 @@ public class ProductBatchDAO implements IProductBatchDAO {
             connector.update(Queries.getFormatted(
                     "productbatch.update.null",
                     Integer.toString(productBatch.getProductbatchId()),
+                    productBatch.getCreatedTime().toString(),
                     Integer.toString(productBatch.getStatus()),
                     Integer.toString(productBatch.getRecipeId()),
                     Integer.toString(productBatch.getUserId())
@@ -51,6 +53,7 @@ public class ProductBatchDAO implements IProductBatchDAO {
             connector.update(Queries.getFormatted(
                     "productbatch.update",
                     Integer.toString(productBatch.getProductbatchId()),
+                    productBatch.getCreatedTime().toString(),
                     productBatch.getFinishedTime().toString(),
                     Integer.toString(productBatch.getStatus()),
                     Integer.toString(productBatch.getRecipeId()),

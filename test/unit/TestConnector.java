@@ -68,7 +68,7 @@ public class TestConnector implements IConnector {
                 // Insert a recipe to the ResultSet
                 insertRecipeResultSet(recipeDTO);
             } else if (cmd.contains("from wcm_productbatch")) {
-                ProductBatchDTO productBatchDTO = new ProductBatchDTO(1, new Timestamp(2017,6,9,12,22,0,0), 0, 1, 1);
+                ProductBatchDTO productBatchDTO = new ProductBatchDTO(1, new Timestamp(2017,6,9,11,22,0,0), new Timestamp(2017,6,9,12,22,0,0), 0, 1, 1);
                 // Insert a productbatch to the ResultSet
                 insertProductBatchResultSet(productBatchDTO);
             }

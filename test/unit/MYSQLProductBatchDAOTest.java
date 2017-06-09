@@ -11,7 +11,7 @@ import java.sql.Timestamp;
 import static org.junit.Assert.assertTrue;
 
 public class MYSQLProductBatchDAOTest {
-    private final ProductBatchDTO testProductBatch = new ProductBatchDTO(1, new Timestamp(2017,6,9,12,22,0,0), 0, 1, 1);
+    private final ProductBatchDTO testProductBatch = new ProductBatchDTO(1, new Timestamp(2017,6,9,11,22,0,0), new Timestamp(2017,6,9,12,22,0,0), 0, 1, 1);
     private IConnector connector;
     private ProductBatchDAO productBatchDAO;
 
@@ -30,7 +30,7 @@ public class MYSQLProductBatchDAOTest {
 
     @Test
     public void updateProductBatch() throws Exception {
-        final ProductBatchDTO newProductBatch = new ProductBatchDTO(1, new Timestamp(2017,6,9,12,22,0,0), 1, 1, 1);
+        final ProductBatchDTO newProductBatch = new ProductBatchDTO(1, new Timestamp(2017,6,9,11,22,0,0), new Timestamp(2017,6,9,12,22,0,0), 1, 1, 1);
         productBatchDAO.updateProductBatch(newProductBatch);
         assertTrue(((TestConnector) connector).isUpdated());
     }
