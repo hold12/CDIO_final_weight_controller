@@ -1,8 +1,8 @@
 package unit;
 
-import jdbclib.IConnector;
-import jdbclib.DALException;
 import dto.*;
+import jdbclib.DALException;
+import jdbclib.IConnector;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 
@@ -43,7 +43,7 @@ public class TestConnector implements IConnector {
 
             // If the SQL statement includes "user" in it
             if (cmd.contains("from view_user")) {
-                UserDTO user = new UserDTO(1, "John", "Doe", "JD", "p455w0rd!", false);
+                UserDTO user = new UserDTO(1, "John", "Doe");
                 // Insert an user to the ResultSet
                 insertUserResultSet(user);
             } else if (cmd.contains("from view_ingredientbatch")) {
@@ -51,7 +51,7 @@ public class TestConnector implements IConnector {
                 // Insert an ingredient batch to the ResultSet
                 insertIngredientBatchResultSet(ingredientBatchDTO);
             } else if (cmd.contains("from view_ingredient")) {
-                IngredientDTO ingredientDTO = new IngredientDTO(1, "tomato", "Heinz");
+                IngredientDTO ingredientDTO = new IngredientDTO(1, "tomato");
                 // Insert an ingredient to the ResultSet
                 insertIngredientResultSet(ingredientDTO);
             } else if (cmd.contains("from view_productbatchcomponent")) {
@@ -66,7 +66,7 @@ public class TestConnector implements IConnector {
                 // Insert a recipe to the ResultSet
                 insertRecipeResultSet(recipeDTO);
             } else if (cmd.contains("from view_productbatch")) {
-                ProductBatchDTO productBatchDTO = new ProductBatchDTO(1, null, null, 0, 1, 1);
+                ProductBatchDTO productBatchDTO = new ProductBatchDTO(1, null, 0, 1, 1);
                 // Insert an productbatch to the ResultSet
                 insertProductBatchResultSet(productBatchDTO);
             }
@@ -101,12 +101,6 @@ public class TestConnector implements IConnector {
                 will(returnValue(user.getFirstname()));
                 allowing(resultSet).getString("user_lastname");
                 will(returnValue(user.getLastname()));
-                allowing(resultSet).getString("initials");
-                will(returnValue(user.getInitials()));
-                allowing(resultSet).getString("password");
-                will(returnValue(user.getPassword()));
-                allowing(resultSet).getBoolean("is_active");
-                will(returnValue(user.isActive()));
             }});
         } catch (SQLException e) {
             throw new DALException(e);
@@ -135,8 +129,6 @@ public class TestConnector implements IConnector {
                 will(returnValue(ingredient.getIngredientId()));
                 allowing(resultSet).getString("ingredient_name");
                 will(returnValue(ingredient.getIngredientName()));
-                allowing(resultSet).getString("supplier");
-                will(returnValue(ingredient.getSupplier()));
             }});
         } catch (SQLException e) {
             throw new DALException(e);

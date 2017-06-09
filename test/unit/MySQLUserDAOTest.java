@@ -1,15 +1,15 @@
 package unit;
 
-import jdbclib.IConnector;
-import dto.UserDTO;
 import dao.UserDAO;
+import dto.UserDTO;
+import jdbclib.IConnector;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 public class MySQLUserDAOTest {
-	private final UserDTO testUser = new UserDTO(1, "John", "Doe", "JD", "p455w0rd!", false);
+	private final UserDTO testUser = new UserDTO(1, "John", "Doe");
     private IConnector connector;
     private UserDAO userDAO;
 

@@ -1,12 +1,11 @@
 package dao;
 
-import jdbclib.*;
 import dto.RecipeDTO;
+import jdbclib.DALException;
+import jdbclib.IConnector;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.LinkedList;
-import java.util.List;
 
 public class RecipeDAO implements IRecipeDAO {
     private IConnector connector;
@@ -34,25 +33,4 @@ public class RecipeDAO implements IRecipeDAO {
         }
     }
 
-    @Override
-    public List<RecipeDTO> getRecipeList() throws DALException {
-        ResultSet rs = connector.query(Queries.getFormatted(
-                "recipe.select.all"
-        ));
-
-        List<RecipeDTO> list = new LinkedList<>();
-
-        try {
-            while (rs.next()) {
-                list.add(new RecipeDTO(
-                        rs.getInt("recipe_id"),
-                        rs.getString("recipe_name")
-                ));
-            }
-        } catch (SQLException e) {
-            throw new DALException(e);
-        }
-
-        return list;
-    }
 }

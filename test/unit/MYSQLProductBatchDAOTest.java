@@ -1,15 +1,15 @@
 package unit;
 
-import jdbclib.IConnector;
-import dto.ProductBatchDTO;
 import dao.ProductBatchDAO;
+import dto.ProductBatchDTO;
+import jdbclib.IConnector;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
 public class MYSQLProductBatchDAOTest {
-    private final ProductBatchDTO testProductBatch = new ProductBatchDTO(1, null, null, 0, 1, 1);
+    private final ProductBatchDTO testProductBatch = new ProductBatchDTO(1, null, 0, 1, 1);
     private IConnector connector;
     private ProductBatchDAO productBatchDAO;
 
@@ -28,7 +28,7 @@ public class MYSQLProductBatchDAOTest {
 
     @Test
     public void updateProductBatch() throws Exception {
-        final ProductBatchDTO newProductBatch = new ProductBatchDTO(1, null, null, 1, 1, 1);
+        final ProductBatchDTO newProductBatch = new ProductBatchDTO(1, null, 1, 1, 1);
         productBatchDAO.updateProductBatch(newProductBatch);
         assertTrue(((TestConnector) connector).isUpdated());
     }
