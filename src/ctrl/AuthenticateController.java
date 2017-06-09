@@ -1,61 +1,97 @@
 package ctrl;
 
+import dao.ProductBatchDAO;
+import dao.RecipeDAO;
+import dao.UserDAO;
+import dto.ProductBatchDTO;
+import dto.RecipeDTO;
+import dto.UserDTO;
+import jdbclib.DALException;
+import jdbclib.IConnector;
 import lang.Lang;
 
 import java.io.IOException;
 
 public class AuthenticateController {
+    private IConnector connector;
+    private IWeightController weightCtrl;
 
-    public boolean authenticate(IWeightController weightClient,String userId, String batchId) {
-        String userIdIn = "";
-        String batchIdIn = "";
+    public AuthenticateController(IConnector connector, IWeightController weightCtrl) {
+        this.connector = connector;
+        this.weightCtrl = weightCtrl;
+    }
+
+    public ProductBatchDTO getBatch() throws IOException, DALException {
+        String batchId = weightCtrl.rm208(Lang.msg("id"), Lang.msg("enterBatchId"), IWeightController.KeyPadState.NUMERIC);
+        String userInput;
+
+        // Find productbatch in database
+        ProductBatchDAO productBatchDAO = new ProductBatchDAO(connector);
+        ProductBatchDTO productBatch;
         try {
-            userIdIn = weightClient.rm208("User", "Type user id", IWeightController.KeyPadState.NUMERIC);
-        } catch (IOException e) {
-            System.err.println(Lang.msg("exceptionRM208"));
-        }
-
-        if (!userIdIn.equals(userId)) {
+            productBatch = productBatchDAO.getProductBatch(Integer.parseInt(batchId));
+            System.out.println(productBatch);
+        } catch (DALException | NumberFormatException e) {
             System.err.println(Lang.msg("errNotAuthenticated"));
-            try { weightClient.writeToPrimaryDisplay("500"); weightClient.writeToSecondaryDisplay(Lang.msg("errNotAuthenticated")); }
-            catch (IOException e) { System.err.println(e.getMessage()); }
-            return false;
+            weightCtrl.rm208(Lang.msg("err"), Lang.msg("errNoBatch"), IWeightController.KeyPadState.NUMERIC);
+            throw new IllegalStateException(Lang.msg("errNoBatch"));
         }
 
+        // Verify Batch recipe name
+        RecipeDTO recipe = new RecipeDAO(connector).getRecipe(productBatch.getRecipeId());
+
+        // Find recipe name in database
+        String recipeName = recipe.getRecipeName();
+        if (recipeName.length() > 30)
+            recipeName = recipeName.substring(0, 30);
+
+        userInput = weightCtrl.rm208("", recipeName, IWeightController.KeyPadState.NUMERIC);
+        if (userInput.startsWith("RM20 C")) throw new IllegalStateException(Lang.msg("errNotAuthenticated"));
+
+        return productBatch;
+    }
+
+    public UserDTO getUser() throws IOException, IllegalStateException {
+        String userId = weightCtrl.rm208(Lang.msg("id"), Lang.msg("enterUserId"), IWeightController.KeyPadState.NUMERIC);
+
+        // Find user in database
+        UserDAO userDAO = new UserDAO(connector);
+        UserDTO user;
         try {
-            batchIdIn = weightClient.rm208("Batch", "Type batch id", IWeightController.KeyPadState.NUMERIC);
-        } catch (IOException e) {
-            System.err.println(Lang.msg("exceptionRM208"));
+            user = userDAO.getUser(Integer.parseInt(userId));
+            System.out.println(user);
+        } catch (DALException | NumberFormatException e) {
+            System.err.println(Lang.msg("errNotAuthenticated"));
+            weightCtrl.rm208(Lang.msg("err"), Lang.msg("errNoSuchUser"), IWeightController.KeyPadState.NUMERIC);
+            throw new IllegalStateException(Lang.msg("errNoSuchUser"));
         }
 
-        if (!batchIdIn.equals(batchId)) {
-            System.err.println(Lang.msg("errNoBatch"));
-            try { weightClient.writeToPrimaryDisplay("404"); weightClient.writeToSecondaryDisplay(Lang.msg("errNoBatch")); }
-            catch (IOException e) { System.err.println(e.getMessage()); }
-            return false;
-        }
-
-        String userInput = "";
+        String userInput;
 
         // Verify Username
-        try {
-            userInput = weightClient.rm208("VERIFY", "andersand", IWeightController.KeyPadState.UPPER_CHARS);
-        } catch (IOException e) { System.err.println(Lang.msg("exceptionRM208")); }
+        String userName = user.getFirstname() + " " + user.getLastname();
+        if (userName.length() > 30)
+            userName = userName.substring(0, 30);
 
-        if (!userInput.equals("Y")) {
+        userInput = weightCtrl.rm208("", userName, IWeightController.KeyPadState.NUMERIC);
+        if (userInput.startsWith("RM20 C")) throw new IllegalStateException(Lang.msg("errNotAuthenticated"));
+
+        return user;
+    }
+
+    public boolean authenticate(int userId, ProductBatchDTO productBatch) throws IOException, IllegalStateException {
+        // Is productbatch already done?
+        if (productBatch.getStatus() == 2) {
+            weightCtrl.rm208(Lang.msg("err"), Lang.msg("errBatchStatus"), IWeightController.KeyPadState.NUMERIC);
             return false;
         }
 
-        // Verify Batch
-        try {
-            userInput = weightClient.rm208("VERIFY", "salt", IWeightController.KeyPadState.UPPER_CHARS);
-        } catch (IOException e) { System.err.println(Lang.msg("exceptionRM208")); }
-
-        if (!userInput.equals("Y")) {
+        // Is user id on productbatch same as entered user id?
+        if (productBatch.getUserId() != userId) {
+            System.err.println(Lang.msg("errNotAuthenticated"));
+            weightCtrl.rm208(Lang.msg("err"), Lang.msg("errNotAuthenticated"), IWeightController.KeyPadState.NUMERIC);
             return false;
         }
-        //System.out.println("User verified information.");
-
 
         return true;
     }

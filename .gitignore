@@ -134,3 +134,5 @@ hs_err_pid*
 /.idea/dbnavigator.xml
 /.idea/vcs.xml
 /.idea/checkstyle-idea.xml
+
+.env

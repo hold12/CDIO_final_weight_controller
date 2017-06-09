@@ -1,99 +1,82 @@
 package ctrl;
 
-import lang.Lang;
+import dao.*;
+import dto.*;
+import jdbclib.DALException;
+import jdbclib.IConnector;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.LinkedList;
+import java.util.List;
 
 public class BatchController {
+    private IConnector connector;
+    private IWeightController weightCtrl;
+    private List<ProductBatchComponentDTO> productBatchComponents;
 
-    public BatchController(IWeightController weightClient,String userId, String batchId) {
+    public BatchController(IConnector connector, IWeightController weightClient) {
+        this.connector = connector;
+        this.weightCtrl = weightClient;
+    }
 
-        String userInput = "";
+    public boolean batch(ProductBatchDTO productBatch) throws DALException {
+        productBatchComponents = new LinkedList<>();
 
-        // Unloaded
-        try {
-            userInput = weightClient.rm208("VERIFY", "unloaded", IWeightController.KeyPadState.UPPER_CHARS);
-        } catch (IOException e) { System.err.println(Lang.msg("exceptionRM208")); }
+        // Get productbatch and recipecomponents
+        List<RecipeComponentDTO> recipeComponents = new RecipeComponentDAO(connector).getRecipeComponentList(productBatch.getRecipeId());
 
-        if (!userInput.equals("Y")) {
-            new BatchController(weightClient, userId, batchId);
-        }
-        //System.out.println("Weight is unloaded.");
+        // Go through every recipe component
+        for (RecipeComponentDTO recipeComponent : recipeComponents) {
+            BatchComponentController batchComponentCtrl = new BatchComponentController(connector, weightCtrl);
 
-        // Place tara
-        try {
-            userInput = weightClient.rm208("", "Place tare", IWeightController.KeyPadState.UPPER_CHARS);
-        } catch (IOException e) { System.err.println(Lang.msg("exceptionRM208")); }
+            //Find ingredient for recipe component
+            IngredientDTO ingredient = new IngredientDAO(connector).getIngredient(recipeComponent.getIngredientId());
 
-        //System.out.println("Tare placed.");
-        float tareWeight = 0;
-        try {
-            tareWeight = stof(weightClient.tareWeight());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //System.out.println("Weight tared as " + tareWeight + " kg.");
-
-        try {
-            userInput = weightClient.rm208("", "Place powder", IWeightController.KeyPadState.UPPER_CHARS);
-        } catch (IOException e) { System.err.println(Lang.msg("exceptionRM208")); }
-
-        float netWeight = 0;
-        try {
-            netWeight = stof(weightClient.getCurrentWeight());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        //System.out.println("Current weight is " + netWeight + " kg.");
-
-        try {
-            userInput = weightClient.rm208("", "Remove all", IWeightController.KeyPadState.UPPER_CHARS);
-        } catch (IOException e) { System.err.println(Lang.msg("exceptionRM208")); }
-
-        float removedWeight = 0;
-        try {
-            removedWeight = stof(weightClient.getCurrentWeight());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        /*System.out.println(removedWeight);
-        System.out.println(((-tareWeight)*1.05));
-        System.out.println(((-tareWeight)*0.95));*/
-        if (removedWeight >= ((-tareWeight)*1.05) && removedWeight <= ((-tareWeight)*0.95)) {
-            try {
-                weightClient.writeToPrimaryDisplay("OK");
+            boolean isSuccess;
+            do {
                 try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    isSuccess = batchComponentCtrl.batchComponent(productBatch, recipeComponent, ingredient);
+                } catch (IllegalStateException | IOException | DALException e) {
+                    //Update productbatch status = 0
+                    productBatch.setStatus(0);
+                    new ProductBatchDAO(connector).updateProductBatch(productBatch);
+                    return false;
                 }
-            } catch (IOException e) {
-                System.err.print(Lang.msg("exceptionMessageDelivery"));
-            }
+            } while (!isSuccess);
+
+            // Add product batch component to list
+            productBatchComponents.add(batchComponentCtrl.getProductBatchComponent());
         }
-        else {
-            try {
-                weightClient.writeToPrimaryDisplay("TareErr");
-                weightClient.writeToSecondaryDisplay("Taring not approved. Try again");
-                try {
-                    Thread.sleep(3000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            } catch (IOException e) {
-                System.err.print(Lang.msg("exceptionMessageDelivery"));
-            }
+
+        addProductBatchComponents(productBatchComponents);
+
+        //Update productbatch status = 2 and Finished time
+        productBatch.setStatus(2);
+        productBatch.setFinishedTime(new Timestamp(System.currentTimeMillis()));
+        new ProductBatchDAO(connector).updateProductBatch(productBatch);
+
+        //Update ingredient batch amount
+        updateIngredientBatches(productBatchComponents);
+
+        return true;
+    }
+
+    private void addProductBatchComponents(List<ProductBatchComponentDTO> productBatchComponents) throws DALException {
+        for (ProductBatchComponentDTO component : productBatchComponents) {
+            new ProductBatchComponentDAO(connector).createProductBatchComponent(component);
         }
     }
 
-    private static float stof(String str) {
-        try {
-            str = str.replace(",",".");
-            return Float.parseFloat(str);
-        } catch (Exception e) {
-            System.err.println(Lang.msg("errSTOF") + "!");
-            return -1;
+    private void updateIngredientBatches(List<ProductBatchComponentDTO> productBatchComponents) throws DALException {
+        for (ProductBatchComponentDTO component : productBatchComponents){
+            IngredientBatchDTO ingredientBatch = new IngredientBatchDAO(connector).getIngredientBatch(component.getIngredientbatchId());
+
+            double amount = ingredientBatch.getAmount();
+            amount = amount - component.getNetWeight();
+
+            ingredientBatch.setAmount(amount);
+            new IngredientBatchDAO(connector).updateIngredientBatch(ingredientBatch);
         }
     }
 
