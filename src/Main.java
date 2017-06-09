@@ -28,7 +28,7 @@ public class Main {
             e.printStackTrace();
         }
 
-        if (!new ConnectionController().connect(weightClient, "localhost", 8000))
+        if (!new ConnectionController().connect(weightClient, "169.254.2.3", 8000))
             System.exit(1);
     }
 

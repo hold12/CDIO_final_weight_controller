@@ -4,6 +4,7 @@ import dao.*;
 import dto.*;
 import jdbclib.DALException;
 import jdbclib.IConnector;
+import lang.Lang;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -35,6 +36,12 @@ public class BatchController {
 
             boolean isSuccess;
             do {
+                try {
+                    weightCtrl.cancelCurrentOperation();
+                } catch (IOException e) {
+                    System.err.println(Lang.msg("exceptionReset"));
+                }
+            	
                 try {
                     isSuccess = batchComponentCtrl.batchComponent(productBatch, recipeComponent, ingredient);
                 } catch (IllegalStateException | IOException | DALException e) {
