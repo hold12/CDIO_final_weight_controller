@@ -34,7 +34,7 @@ public class UserDTO {
 
 		if (firstname != null ? !firstname.equals(that.firstname) : that.firstname != null) return false;
 		if (lastname != null ? !lastname.equals(that.lastname) : that.lastname != null) return false;
-		return userId != that.userId;
+		return userId == that.userId;
 	}
 
 	public String toString() {

@@ -3,7 +3,6 @@ package dao;
 import dto.ProductBatchComponentDTO;
 import jdbclib.DALException;
 import jdbclib.IConnector;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -45,15 +44,5 @@ public class ProductBatchComponentDAO implements IProductBatchComponentDAO {
                 Double.toString(productBatchComponent.getTare()),
                 Double.toString(productBatchComponent.getNetWeight())
         ));
-    }
-
-    @Override
-    public void updateProductBatchComponent(ProductBatchComponentDTO productBatchComponent) throws DALException {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public void deleteProductBatchComponent(ProductBatchComponentDTO productBatchComponent) throws DALException {
-        throw new NotImplementedException();
     }
 }

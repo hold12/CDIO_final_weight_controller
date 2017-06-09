@@ -9,6 +9,7 @@ import org.jmock.Mockery;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 
 public class TestConnector implements IConnector {
     private final Mockery mockery = new Mockery();
@@ -42,32 +43,33 @@ public class TestConnector implements IConnector {
             this.selected = true;
 
             // If the SQL statement includes "user" in it
-            if (cmd.contains("from view_user")) {
+            if (cmd.contains("from wcm_user")) {
                 UserDTO user = new UserDTO(1, "John", "Doe");
                 // Insert an user to the ResultSet
                 insertUserResultSet(user);
-            } else if (cmd.contains("from view_ingredientbatch")) {
+            } else if (cmd.contains("from wcm_ingredientbatch")) {
                 IngredientBatchDTO ingredientBatchDTO = new IngredientBatchDTO(1, 2, 3.4);
                 // Insert an ingredient batch to the ResultSet
                 insertIngredientBatchResultSet(ingredientBatchDTO);
-            } else if (cmd.contains("from view_ingredient")) {
+            } else if (cmd.contains("from wcm_ingredient")) {
                 IngredientDTO ingredientDTO = new IngredientDTO(1, "tomato");
                 // Insert an ingredient to the ResultSet
                 insertIngredientResultSet(ingredientDTO);
-            } else if (cmd.contains("from view_productbatchcomponent")) {
+            } else if (cmd.contains("from wcm_productbatchcomponent")) {
                 ProductBatchComponentDTO productBatchComponentDTO = new ProductBatchComponentDTO(1, 1, 0.5, 10);
-                // Insert an ingredient to the ResultSet
+                // Insert a product batch component to the ResultSet
                 insertProductBatchComponentResultSet(productBatchComponentDTO);
-            } else if (cmd.contains("from view_recipecomponent")) {
+            } else if (cmd.contains("from wcm_recipecomponent")) {
                 RecipeComponentDTO recipeComponentDTO = new RecipeComponentDTO(1, 2, 1.2, 1.2);
+                // Insert a recipe component to the ResultSet
                 insertRecipeComponentResultSet(recipeComponentDTO);
-            } else if (cmd.contains("from view_recipe")) {
+            } else if (cmd.contains("from wcm_recipe")) {
                 RecipeDTO recipeDTO = new RecipeDTO(1, "pizza");
                 // Insert a recipe to the ResultSet
                 insertRecipeResultSet(recipeDTO);
-            } else if (cmd.contains("from view_productbatch")) {
-                ProductBatchDTO productBatchDTO = new ProductBatchDTO(1, null, 0, 1, 1);
-                // Insert an productbatch to the ResultSet
+            } else if (cmd.contains("from wcm_productbatch")) {
+                ProductBatchDTO productBatchDTO = new ProductBatchDTO(1, new Timestamp(2017,6,9,12,22,0,0), 0, 1, 1);
+                // Insert a productbatch to the ResultSet
                 insertProductBatchResultSet(productBatchDTO);
             }
         }
@@ -97,9 +99,9 @@ public class TestConnector implements IConnector {
             mockery.checking(new Expectations() {{
                 allowing(resultSet).getInt("user_id");
                 will(returnValue(user.getUserId()));
-                allowing(resultSet).getString("user_firstname");
+                allowing(resultSet).getString("firstname");
                 will(returnValue(user.getFirstname()));
-                allowing(resultSet).getString("user_lastname");
+                allowing(resultSet).getString("lastname");
                 will(returnValue(user.getLastname()));
             }});
         } catch (SQLException e) {
@@ -111,11 +113,11 @@ public class TestConnector implements IConnector {
         try {
             mockery.checking(new Expectations() {{
                 allowing(resultSet).getInt("ingredientbatch_id");
-                will(returnValue(1));
+                will(returnValue(ingredientBatch.getIngredientBatchId()));
                 allowing(resultSet).getInt("ingredient_id");
-                will(returnValue(2));
+                will(returnValue(ingredientBatch.getIngredientId()));
                 allowing(resultSet).getDouble("amount");
-                will(returnValue(3.4));
+                will(returnValue(ingredientBatch.getAmount()));
             }});
         } catch (SQLException e) {
             throw new DALException(e);
@@ -187,10 +189,14 @@ public class TestConnector implements IConnector {
             mockery.checking(new Expectations() {{
                 allowing(resultSet).getInt("productbatch_id");
                 will(returnValue(productBatch.getProductbatchId()));
+                allowing(resultSet).getTimestamp("finished_time");
+                will(returnValue(productBatch.getFinishedTime()));
                 allowing(resultSet).getInt("status");
                 will(returnValue(productBatch.getStatus()));
                 allowing(resultSet).getInt("recipe_id");
                 will(returnValue(productBatch.getRecipeId()));
+                allowing(resultSet).getInt("user_id");
+                will(returnValue(productBatch.getUserId()));
             }});
         } catch (SQLException e) {
             throw new DALException(e);
