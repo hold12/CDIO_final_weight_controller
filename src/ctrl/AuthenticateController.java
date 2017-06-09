@@ -31,7 +31,7 @@ public class AuthenticateController {
         try {
             productBatch = productBatchDAO.getProductBatch(Integer.parseInt(batchId));
             System.out.println(productBatch);
-        } catch (DALException e) {
+        } catch (DALException | NumberFormatException e) {
             System.err.println(Lang.msg("errNotAuthenticated"));
             weightCtrl.rm208(Lang.msg("err"), Lang.msg("errNoBatch"), IWeightController.KeyPadState.NUMERIC);
             throw new IllegalStateException(Lang.msg("errNoBatch"));
@@ -60,7 +60,7 @@ public class AuthenticateController {
         try {
             user = userDAO.getUser(Integer.parseInt(userId));
             System.out.println(user);
-        } catch (DALException e) {
+        } catch (DALException | NumberFormatException e) {
             System.err.println(Lang.msg("errNotAuthenticated"));
             weightCtrl.rm208(Lang.msg("err"), Lang.msg("errNoSuchUser"), IWeightController.KeyPadState.NUMERIC);
             throw new IllegalStateException(Lang.msg("errNoSuchUser"));

@@ -8,25 +8,23 @@ import lang.Lang;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Scanner;
 
 public class Main {
     private IWeightController weightClient;
-    private String input;
-    private Scanner scn;
     private DBConnector dbConnector;
 
     private Main() {
         weightClient = new WeightController();
-        scn = new Scanner(System.in);
+
         try {
             dbConnector = new DBConnector(new DatabaseConnection());
         } catch (IOException e) {
             System.err.println(".env file not found.");
         }
+
         try {
             dbConnector.connectToDatabase();
-        } catch (ClassNotFoundException | SQLException | DALException e ) {
+        } catch (ClassNotFoundException | SQLException | DALException e) {
             e.printStackTrace();
         }
 
@@ -36,8 +34,13 @@ public class Main {
 
     public static void main(String[] args) {
         String[] locale = new String[2];
-        if (args.length == 0) { locale[0] = "en";    locale[1] = "UK"; }
-        else                  { locale[0] = args[0]; locale[1] = args[1]; }
+        if (args.length == 0) {
+            locale[0] = "en";
+            locale[1] = "UK";
+        } else {
+            locale[0] = args[0];
+            locale[1] = args[1];
+        }
         Lang.setLanguage(locale);
 
         Main main = new Main();
@@ -53,12 +56,27 @@ public class Main {
         }
 
         AuthenticateController auth = new AuthenticateController(dbConnector, weightClient);
-        UserDTO user;
-        ProductBatchDTO productBatch;
+        UserDTO user = null;
+        ProductBatchDTO productBatch = null;
         try {
             do {
-                user = auth.getUser();
-                productBatch = auth.getBatch();
+                boolean success;
+                do {
+                    try {
+                        user = auth.getUser();
+                        success = true;
+                    } catch (IllegalStateException e) {
+                        success = false;
+                    }
+                } while (!success);
+                do {
+                    try {
+                        productBatch = auth.getBatch();
+                        success = true;
+                    } catch (IllegalStateException e) {
+                        success = false;
+                    }
+                } while (!success);
             }
             while (!auth.authenticate(user.getUserId(), productBatch));
         } catch (IOException | DALException e) {
@@ -73,7 +91,6 @@ public class Main {
             e.printStackTrace();
             return;
         }
-
         try {
             while (weightClient.rm208("", "Press OK to begin anew.", IWeightController.KeyPadState.NUMERIC).equals("RM20 C"))
                 ;
