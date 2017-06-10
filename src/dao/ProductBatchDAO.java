@@ -1,14 +1,11 @@
 package dao;
 
-import jdbclib.*;
 import dto.ProductBatchDTO;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
+import jdbclib.DALException;
+import jdbclib.IConnector;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.LinkedList;
-import java.util.List;
 
 public class ProductBatchDAO implements IProductBatchDAO {
     private IConnector connector;
@@ -37,32 +34,6 @@ public class ProductBatchDAO implements IProductBatchDAO {
         } catch (SQLException e) {
             throw new DALException(e);
         }
-    }
-
-    @Override
-    public List<ProductBatchDTO> getProductBatchList() throws DALException {
-        ResultSet rs = connector.query(Queries.getFormatted(
-                "productbatch.select.all"
-        ));
-
-        List<ProductBatchDTO> list = new LinkedList<>();
-
-        try {
-            while (rs.next()) {
-                list.add(new ProductBatchDTO(
-                        rs.getInt("productbatch_id"),
-                        rs.getTimestamp("created_time"),
-                        rs.getTimestamp("finished_time"),
-                        rs.getInt("status"),
-                        rs.getInt("recipe_id"),
-                        rs.getInt("user_id")
-                ));
-            }
-        } catch (SQLException e) {
-            throw new DALException(e);
-        }
-
-        return list;
     }
 
     @Override

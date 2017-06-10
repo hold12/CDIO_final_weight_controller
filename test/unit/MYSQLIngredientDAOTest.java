@@ -1,15 +1,15 @@
 package unit;
 
-import jdbclib.IConnector;
 import dao.IngredientDAO;
 import dto.IngredientDTO;
+import jdbclib.IConnector;
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
 public class MYSQLIngredientDAOTest {
-    private final IngredientDTO testIngredient = new IngredientDTO(1, "tomato", "Heinz");
+    private final IngredientDTO testIngredient = new IngredientDTO(1, "tomato");
     private IConnector connector;
     private IngredientDAO ingredientDAO;
 

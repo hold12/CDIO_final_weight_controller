@@ -3,6 +3,7 @@ package ctrl;
 import SimpleTCP.Client.*;
 
 import java.io.IOException;
+import java.util.LinkedList;
 
 public class WeightController implements IWeightController {
     private ITCPClient tcp;
@@ -26,12 +27,54 @@ public class WeightController implements IWeightController {
         System.out.println("Sent:\t\t" + msg);
     }
 
-    private String receiveMessage() throws IOException {
+    public String receiveMessage() throws IOException {
         String rcv = tcp.receive();
         System.out.println("Received:\t" + rcv);
         return rcv;
     }
 
+    // RM36 (Prepare softbuttons)
+    public String rm36(LinkedList<String> buttons) throws IOException {
+        String receivedMessage = "";
+        String sendMessage = "RM36 " + buttons.size();
+        
+        for (String button : buttons){
+        	sendMessage += " \"" + button + "\"";
+        }
+        
+        try {
+            sendMessage(sendMessage);
+            receivedMessage = receiveMessage();
+        } catch (IOException e) {
+            throw new IOException("Failed to prepare softbuttons: " + e.getMessage());
+        }
+        return receivedMessage;
+    }
+
+    // RM38 (Show softbuttons)
+    public String rm38(int noOfButtons) throws IOException {
+        String receivedMessage = "";
+        try {
+            sendMessage("RM38 " + noOfButtons);
+            receivedMessage = receiveMessage();
+        } catch (IOException e) {
+            throw new IOException("Failed to show softbuttons: " + e.getMessage());
+        }
+        return receivedMessage;
+    }
+    
+    // DW (Show weight display)
+    public String showWeightDisplay() throws IOException {
+        String receivedMessage = "";
+        try {
+            sendMessage("DW");
+            receivedMessage = receiveMessage();
+        } catch (IOException e) {
+            throw new IOException("Failed to change display to weight display: " + e.getMessage());
+        }
+        return receivedMessage;
+    }
+    
     // S (Receive stable weight)
     @Override
     public String getCurrentWeight() throws IOException {

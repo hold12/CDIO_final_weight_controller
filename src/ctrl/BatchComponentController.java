@@ -8,6 +8,7 @@ import jdbclib.IConnector;
 import lang.Lang;
 
 import java.io.IOException;
+import java.util.LinkedList;
 
 /**
  * Created by freya on 06-06-2017.
@@ -40,9 +41,17 @@ public class BatchComponentController {
         new ProductBatchDAO(connector).updateProductBatch(productBatch);
 
         // Place tara
-        userInput = rm208("", Lang.msg("placeTare"), IWeightController.KeyPadState.NUMERIC);
-        if (userInput.startsWith("RM20 C")) throw new IllegalStateException("User cancelled operation");
-
+        weightCtrl.showWeightDisplay();
+        weightCtrl.writeToSecondaryDisplay(Lang.msg("placeTare"));
+        LinkedList<String> buttons = new LinkedList();
+        buttons.add("");
+        buttons.add("");
+        buttons.add("");
+        buttons.add("");
+        buttons.add(Lang.msg("ok"));
+        weightCtrl.rm36(buttons);
+        weightCtrl.rm38(buttons.size());
+        weightCtrl.receiveMessage(); //Wait for user to push a button
         float tareWeight = stof(weightCtrl.tareWeight());
         productBatchComponent.setTare(tareWeight);
 
@@ -61,9 +70,11 @@ public class BatchComponentController {
         productBatchComponent.setIngredientbatchId(ingredientBatch.getIngredientBatchId());
 
         // Place ingredient
-        userInput = rm208("" + ingredientBatch.getIngredientBatchId(), Lang.msg("place") + " " + ingredient.getIngredientName(), IWeightController.KeyPadState.NUMERIC);
-        if (userInput.startsWith("RM20 C")) throw new IllegalStateException("User cancelled operation");
-
+        weightCtrl.showWeightDisplay();
+        weightCtrl.writeToSecondaryDisplay(Lang.msg("place") + " " + ingredient.getIngredientName());
+        weightCtrl.rm36(buttons);
+        weightCtrl.rm38(buttons.size());
+        weightCtrl.receiveMessage(); //Wait for user to push a button
         float netWeight = stof(weightCtrl.getCurrentWeight());
         productBatchComponent.setNetWeight(netWeight);
 
@@ -112,25 +123,26 @@ public class BatchComponentController {
         String ingredientBatchId = rm208(Lang.msg("id"), Lang.msg("enterIngredientBatchId"), IWeightController.KeyPadState.NUMERIC);
         try {
             ingredientBatch = new IngredientBatchDAO(connector).getIngredientBatch(Integer.parseInt(ingredientBatchId));
+            
+	        if (ingredientBatch.getIngredientId() != recipeComponent.getIngredientId()){
+	            ingredientBatch = null;
+	            userInput = rm208("", Lang.msg("errNoIngredientBatchForIngredient"), IWeightController.KeyPadState.NUMERIC);
+	            if (userInput.startsWith("RM20 C")) throw new IllegalStateException("User cancelled operation");
+	        } else if (ingredientBatch.getAmount() < recipeComponent.getNominatedNetWeight()){
+	            ingredientBatch = null;
+	            userInput = rm208("", Lang.msg("errStockNotSufficient"), IWeightController.KeyPadState.NUMERIC);
+	            if (userInput.startsWith("RM20 C")) throw new IllegalStateException("User cancelled operation");
+	        }
         } catch (DALException | NumberFormatException e) {
+            ingredientBatch = null;
             weightCtrl.rm208(Lang.msg("err"), Lang.msg("errNoIngredientBatch"), IWeightController.KeyPadState.NUMERIC);
-        }
-
-        if (ingredientBatch.getIngredientId() != recipeComponent.getIngredientId()){
-            ingredientBatch = null;
-            userInput = rm208("", Lang.msg("errNoIngredientBatchForIngredient"), IWeightController.KeyPadState.NUMERIC);
-            if (userInput.startsWith("RM20 C")) throw new IllegalStateException("User cancelled operation");
-        } else if (ingredientBatch.getAmount() < recipeComponent.getNominatedNetWeight()){
-            ingredientBatch = null;
-            userInput = rm208("", Lang.msg("errStockNotSufficient"), IWeightController.KeyPadState.NUMERIC);
-            if (userInput.startsWith("RM20 C")) throw new IllegalStateException("User cancelled operation");
         }
 
         return ingredientBatch;
     }
 
     private String rm208(String primary, String secondary, IWeightController.KeyPadState keyPadState) throws IOException {
-        return weightCtrl.rm208(substring7(primary), substring30(secondary), keyPadState);
+        return weightCtrl.rm208(substring7(primary), substring24(secondary), keyPadState);
     }
 
     private String substring7(String string) {
@@ -141,9 +153,9 @@ public class BatchComponentController {
         }
     }
 
-    private String substring30(String string) {
-        if (string.length() > 30) {
-            return string.substring(0, 30);
+    private String substring24(String string) {
+        if (string.length() > 24) {
+            return string.substring(0, 24);
         } else {
             return string;
         }

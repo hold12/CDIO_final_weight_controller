@@ -1,13 +1,12 @@
 package unit;
 
-import jdbclib.IConnector;
 import dao.IngredientBatchDAO;
 import dto.IngredientBatchDTO;
+import jdbclib.IConnector;
 import org.junit.Before;
 import org.junit.Test;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 public class MYSQLIngredientBatchDAOTest {
 	private final IngredientBatchDTO testIngredientBatch = new IngredientBatchDTO(1, 2, 3.4);

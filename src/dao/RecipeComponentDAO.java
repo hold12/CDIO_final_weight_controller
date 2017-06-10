@@ -1,7 +1,8 @@
 package dao;
 
-import jdbclib.*;
 import dto.RecipeComponentDTO;
+import jdbclib.DALException;
+import jdbclib.IConnector;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -41,30 +42,6 @@ public class RecipeComponentDAO implements IRecipeComponentDAO {
         ResultSet rs = connector.query(Queries.getFormatted(
                 "recipecomponent.select.where.recipeid",
                 Integer.toString(recipeId)
-        ));
-
-        List<RecipeComponentDTO> list = new LinkedList<>();
-
-        try {
-            while (rs.next()) {
-                list.add(new RecipeComponentDTO(
-                        rs.getInt("recipe_id"),
-                        rs.getInt("ingredient_id"),
-                        rs.getDouble("nominated_net_weight"),
-                        rs.getDouble("tolerance")
-                ));
-            }
-        } catch (SQLException e) {
-            throw new DALException(e);
-        }
-
-        return list;
-    }
-
-    @Override
-    public List<RecipeComponentDTO> getRecipeComponentList() throws DALException {
-        ResultSet rs = connector.query(Queries.getFormatted(
-                "recipecomponent.select.all"
         ));
 
         List<RecipeComponentDTO> list = new LinkedList<>();

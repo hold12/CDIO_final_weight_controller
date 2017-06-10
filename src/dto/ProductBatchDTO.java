@@ -9,7 +9,7 @@ public class ProductBatchDTO {
 	private int status;
 	private int recipeId;
 	private int userId;
-	
+
 	public ProductBatchDTO(int productbatchId, Timestamp createdTime, Timestamp finishedTime, int status, int recipeId, int userId) {
 		this.productbatchId = productbatchId;
 		this.createdTime = createdTime;
