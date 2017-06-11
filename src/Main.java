@@ -1,6 +1,6 @@
 import ctrl.*;
-import dto.ProductBatchDTO;
-import dto.UserDTO;
+import db.dto.ProductBatchDTO;
+import db.dto.UserDTO;
 import jdbclib.DALException;
 import jdbclib.DBConnector;
 import jdbclib.DatabaseConnection;
@@ -13,7 +13,7 @@ public class Main {
     private IWeightController weightClient;
     private DBConnector dbConnector;
 
-    private Main(String ip, int port) {
+    private Main() {
         weightClient = new WeightController();
 
         try {
@@ -27,56 +27,12 @@ public class Main {
         } catch (ClassNotFoundException | SQLException | DALException e) {
             e.printStackTrace();
         }
-
-        if (!new ConnectionController().connect(weightClient, ip, port))
-            System.exit(1);
     }
 
     public static void main(String[] args) {
-        String[] locale = new String[2];
-        String ip = null;
-        int port = 0;
 
-        if (args.length == 0) {
-            locale[0] = "en";
-            locale[1] = "UK";
-            ip = "localhost";
-            port = 8000;
-        } else if (args.length == 6)
-            for (int i = 0; i < args.length; i++) {
-                if (args[i].equals("--address")) {
-                    ip = args[i + 1];
-                    port = Integer.parseInt(args[i + 2]);
-                    if (i == 0) i += 2;
-                } else if (args[i].equals("--locale")) {
-                    locale[0] = args[i + 1];
-                    locale[1] = args[i + 2];
-                    if (i == 0) i += 2;
-                } else {
-                    System.out.println("Please start the application with valid or no arguments.");
-                    System.out.println("Usage: java -jar <APPLICATION_JAR>.jar --locale <language> <country> (ex. en US) --address <ip> <port>");
-                    try {
-                        Thread.sleep(3000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    System.exit(1);
-                }
-            }
-        else {
-            System.out.println("Please start the application with valid or no arguments.");
-            System.out.println("Usage: java -jar <APPLICATION_JAR>.jar --locale <language> <country> (ex. en US) --address <ip> <port>");
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            System.exit(1);
-        }
-
-        Lang.setLanguage(locale);
-
-        Main main = new Main(ip, port);
+        Main main = new Main();
+        main.doStuffWithArgs(args);
         while (true)
             main.startProgram();
     }
@@ -127,6 +83,57 @@ public class Main {
         try {
             while (weightClient.rm208("", "Press OK to begin anew.", IWeightController.KeyPadState.NUMERIC).equals("RM20 C"));
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void doStuffWithArgs(String[] args) {
+        boolean argsError = false;
+        String[] locale = new String[2];
+        String ip = null;
+        int port = 0;
+
+        if (args.length == 0) {
+            locale[0] = "en";
+            locale[1] = "US";
+            ip = "localhost";
+            port = 8000;
+        } else if (args.length == 6)
+            label:for (int i = 0; i < args.length; i++) {
+                switch (args[i]) {
+                    case "--address":
+                        ip = args[i + 1];
+                        port = Integer.parseInt(args[i + 2]);
+                        if (i == 3) break label;
+                        if (i == 0) i += 2;
+                        break;
+                    case "--locale":
+                        locale[0] = args[i + 1];
+                        locale[1] = args[i + 2];
+                        if (i == 3) break label;
+                        if (i == 0) i += 2;
+                        break;
+                    default:
+                       argsError = true; break label;
+                }
+            }
+
+        if (argsError || !Lang.setLanguage(locale)) {
+            System.out.println("Please start the application with valid or no arguments.\nExample: java -jar <APPLICATION_JAR>.jar --locale <language> <country> (ex. en US) --address <ip> <port>");
+            sleep(3000);
+            System.exit(1);
+        }
+
+        if (!new ConnectionController().connect(weightClient, ip, port)) {
+            sleep(3000);
+            System.exit(1);
+        }
+    }
+
+    private void sleep(int millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }

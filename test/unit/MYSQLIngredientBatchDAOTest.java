@@ -1,7 +1,7 @@
 package unit;
 
-import dao.IngredientBatchDAO;
-import dto.IngredientBatchDTO;
+import db.dao.IngredientBatchDAO;
+import db.dto.IngredientBatchDTO;
 import jdbclib.IConnector;
 import org.junit.Before;
 import org.junit.Test;
