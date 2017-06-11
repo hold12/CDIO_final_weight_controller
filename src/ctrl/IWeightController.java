@@ -25,7 +25,7 @@ public interface IWeightController {
     String rm36(LinkedList<String> buttons) throws IOException;
     String getCurrentWeight() throws IOException;
     String tareWeight() throws IOException;
-    void writeToPrimaryDisplay(String message) throws IOException, StringIndexOutOfBoundsException;
+    void writeToPrimaryDisplay(String message) throws IOException;
     void writeToSecondaryDisplay(String message) throws IOException, StringIndexOutOfBoundsException;
     void clearPrimaryDisplay() throws IOException;
     String rm208(String primaryDisplay, String secondaryDisplay, KeyPadState keyPadState) throws IOException, StringIndexOutOfBoundsException;
