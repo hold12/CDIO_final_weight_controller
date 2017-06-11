@@ -1,6 +1,6 @@
-package db.dao;
+package dao;
 
-import db.dto.UserDTO;
+import dto.UserDTO;
 import jdbclib.DALException;
 import jdbclib.IConnector;
 

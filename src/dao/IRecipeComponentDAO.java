@@ -1,6 +1,6 @@
-package db.dao;
+package dao;
 
-import db.dto.RecipeComponentDTO;
+import dto.RecipeComponentDTO;
 import jdbclib.DALException;
 
 import java.util.List;

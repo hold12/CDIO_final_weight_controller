@@ -1,4 +1,4 @@
-package db.dao;
+package dao;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -14,6 +14,7 @@ class Queries {
         try (FileInputStream fileInputStream = new FileInputStream(file)){
             properties = new Properties();
             properties.load(fileInputStream);
+
         } catch (IOException e) {
             System.err.println("Failed to read file: \"resources/sql.properties\".");
         }

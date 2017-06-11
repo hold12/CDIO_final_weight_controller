@@ -1,11 +1,11 @@
 package ctrl;
 
-import db.dao.ProductBatchDAO;
-import db.dao.RecipeDAO;
-import db.dao.UserDAO;
-import db.dto.ProductBatchDTO;
-import db.dto.RecipeDTO;
-import db.dto.UserDTO;
+import dao.ProductBatchDAO;
+import dao.RecipeDAO;
+import dao.UserDAO;
+import dto.ProductBatchDTO;
+import dto.RecipeDTO;
+import dto.UserDTO;
 import jdbclib.DALException;
 import jdbclib.IConnector;
 import lang.Lang;

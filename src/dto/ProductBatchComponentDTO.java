@@ -1,4 +1,4 @@
-package db.dto;
+package dto;
 
 public class ProductBatchComponentDTO {
 	private int productbatchId;

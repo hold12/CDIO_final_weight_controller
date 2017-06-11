@@ -1,7 +1,7 @@
 package unit;
 
-import db.dao.UserDAO;
-import db.dto.UserDTO;
+import dao.UserDAO;
+import dto.UserDTO;
 import jdbclib.IConnector;
 import org.junit.Before;
 import org.junit.Test;

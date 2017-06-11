@@ -1,8 +1,8 @@
-package db.dao;
+package dao;
 
 import jdbclib.DALException;
 
-import db.dto.UserDTO;
+import dto.UserDTO;
 
 public interface IUserDAO {
 	UserDTO getUser(int userId) throws DALException;

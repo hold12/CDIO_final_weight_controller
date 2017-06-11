@@ -1,8 +1,8 @@
 package ctrl;
 
-import db.dao.IngredientBatchDAO;
-import db.dao.ProductBatchDAO;
-import db.dto.*;
+import dao.IngredientBatchDAO;
+import dao.ProductBatchDAO;
+import dto.*;
 import jdbclib.DALException;
 import jdbclib.IConnector;
 import lang.Lang;

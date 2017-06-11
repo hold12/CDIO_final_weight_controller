@@ -1,6 +1,6 @@
 package unit;
 
-import db.dto.*;
+import dto.*;
 import jdbclib.DALException;
 import jdbclib.IConnector;
 import org.jmock.Expectations;

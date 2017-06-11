@@ -13,7 +13,7 @@ public class Main {
     private IWeightController weightClient;
     private DBConnector dbConnector;
 
-    private Main(String ip, int port) {
+    private Main() {
         weightClient = new WeightController();
 
         try {

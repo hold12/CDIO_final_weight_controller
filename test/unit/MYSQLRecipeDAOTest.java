@@ -1,8 +1,8 @@
 package unit;
 
 import jdbclib.IConnector;
-import db.dao.RecipeDAO;
-import db.dto.RecipeDTO;
+import dao.RecipeDAO;
+import dto.RecipeDTO;
 import org.junit.Before;
 import org.junit.Test;
 

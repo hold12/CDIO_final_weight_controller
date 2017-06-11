@@ -1,7 +1,6 @@
 package lang;
 
 import java.util.Locale;
-import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 public class Lang {
@@ -12,24 +11,29 @@ public class Lang {
 
     public static String msg(String message) { return resourceBundle.getString(message); }
 
-    public static boolean setLanguage(String[] args) {
-        if (args.length == 2 && (args[0] != null && args[1] != null)) {
+    public static void setLanguage(String[] args) {
+        //if (args.length != 2) {
+        //    lang = "en";
+        //    country = "UK";
+        //} else {
+        //    lang = args[0];
+        //    country = args[1];
+        //}
+        if (args.length == 2) {
             lang = args[0];
             country = args[1];
         }
-        else return false;
 
         try
         {
             Locale locale = new Locale(lang, country);
             resourceBundle = ResourceBundle.getBundle("lang", locale);
         }
-        catch (NullPointerException | MissingResourceException ex)
+        catch (Exception ex)
         {
             System.out.println("You either specified some wrong arguments or you specified a language that doesn't exist in this game.");
-            System.out.println("Usage: java -jar <APPLICATION_JAR>.jar <language> <country> (ex. en US)");
-            return false;
+            System.out.println("Usage: java -jar <APPLICATION_JAR>.jar <language> <country> (ex. da DK)");
         }
-        return true;
+
     }
 }
