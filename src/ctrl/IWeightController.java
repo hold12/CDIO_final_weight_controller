@@ -1,6 +1,7 @@
 package ctrl;
 
 import java.io.IOException;
+import java.util.LinkedList;
 
 public interface IWeightController {
     enum KeyPadState {
@@ -18,6 +19,10 @@ public interface IWeightController {
     }
 
     void connect(String host, int port) throws IOException;
+    String receiveMessage() throws IOException;
+    String showWeightDisplay() throws IOException;
+    String rm38(int noOfButtons) throws IOException;
+    String rm36(LinkedList<String> buttons) throws IOException;
     String getCurrentWeight() throws IOException;
     String tareWeight() throws IOException;
     void writeToPrimaryDisplay(String message) throws IOException;
