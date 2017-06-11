@@ -35,15 +35,15 @@ public class WeightController implements IWeightController {
 
     // RM36 (Prepare softbuttons)
     public String rm36(LinkedList<String> buttons) throws IOException {
-        String receivedMessage = "";
-        String sendMessage = "RM36 " + buttons.size();
+        String receivedMessage;
+        StringBuilder sendMessage = new StringBuilder("RM36 " + buttons.size());
         
         for (String button : buttons){
-        	sendMessage += " \"" + button + "\"";
+        	sendMessage.append(" \"").append(button).append("\"");
         }
         
         try {
-            sendMessage(sendMessage);
+            sendMessage(sendMessage.toString());
             receivedMessage = receiveMessage();
         } catch (IOException e) {
             throw new IOException("Failed to prepare softbuttons: " + e.getMessage());
@@ -53,7 +53,7 @@ public class WeightController implements IWeightController {
 
     // RM38 (Show softbuttons)
     public String rm38(int noOfButtons) throws IOException {
-        String receivedMessage = "";
+        String receivedMessage;
         try {
             sendMessage("RM38 " + noOfButtons);
             receivedMessage = receiveMessage();
@@ -65,7 +65,7 @@ public class WeightController implements IWeightController {
     
     // DW (Show weight display)
     public String showWeightDisplay() throws IOException {
-        String receivedMessage = "";
+        String receivedMessage;
         try {
             sendMessage("DW");
             receivedMessage = receiveMessage();
@@ -123,11 +123,13 @@ public class WeightController implements IWeightController {
 
     // D (Write in the primary display of the weight)
     @Override
-    public void writeToPrimaryDisplay(String message) throws IOException {
+    public void writeToPrimaryDisplay(String message) throws IOException, StringIndexOutOfBoundsException {
+        if (message.length() > 7)
+            throw new StringIndexOutOfBoundsException("The message to the primary display must be within 7 characters long.");
         try {
             sendMessage("D \"" + message + "\"");
             if (!receiveMessage().equals("D A"))
-                throw new IOException("Something went wrong when displaying message on the weight.");
+                throw new IOException("Something went wrong while displaying message on the weight.");
         } catch (IOException e) {
             throw new IOException("Failed to send the message: " + e.getMessage());
         }
@@ -139,7 +141,7 @@ public class WeightController implements IWeightController {
         try {
             sendMessage("DW");
             if (!receiveMessage().equals("DW A"))
-                throw new IOException("Something went wrong when clearing main display.");
+                throw new IOException("Something went wrong while clearing main display.");
         } catch (IOException e) {
             throw new IOException("Failed to clear primary display: " + e.getMessage());
         }
@@ -148,13 +150,13 @@ public class WeightController implements IWeightController {
     @Override
     public void writeToSecondaryDisplay(String message) throws IOException, StringIndexOutOfBoundsException {
         if (message.length() > 30)
-            throw new StringIndexOutOfBoundsException("The message must be within 30 characters long.");
+            throw new StringIndexOutOfBoundsException("The message to the secondary display must be within 30 characters long.");
         try {
             sendMessage("P111 \"" + message + "\"");
             if (!receiveMessage().equals("P111 A"))
-                throw new IOException("Something went wrong when writing to the secondary display.");
+                throw new IOException("Something went wrong while writing to the secondary display.");
         } catch (IOException e) {
-            throw new IOException("Failed to write to the secondary dispaly: " + e.getMessage());
+            throw new IOException("Failed to write to the secondary display: " + e.getMessage());
         }
     }
 
@@ -169,7 +171,7 @@ public class WeightController implements IWeightController {
             sendMessage("RM20 8 \"" + secondaryDisplay + "\" \"" + primaryDisplay + "\" \"" + keyPadState + "\"");
             String tcpRecRm = receiveMessage();
             if (!tcpRecRm.equals("RM20 B"))
-                throw new IOException("Something went wrong when receiving RM20 B message from the weight.");
+                throw new IOException("Something went wrong while receiving RM20 B message from the weight.");
             userMessage = receiveMessage();
             userMessage = userMessage.replace("RM20 A \"", "");
             userMessage = userMessage.replace("\"", "");
