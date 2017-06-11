@@ -1,7 +1,7 @@
 package unit;
 
-import dao.ProductBatchDAO;
-import dto.ProductBatchDTO;
+import db.dao.ProductBatchDAO;
+import db.dto.ProductBatchDTO;
 import jdbclib.IConnector;
 import org.junit.Before;
 import org.junit.Test;

@@ -1,7 +1,7 @@
 package ctrl;
 
-import dao.*;
-import dto.*;
+import db.dao.*;
+import db.dto.*;
 import jdbclib.DALException;
 import jdbclib.IConnector;
 import lang.Lang;
