@@ -8,6 +8,8 @@ import jdbclib.IConnector;
 import lang.Lang;
 
 import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.LinkedList;
 
 public class BatchComponentController {
@@ -17,7 +19,7 @@ public class BatchComponentController {
     private RecipeComponentDTO recipeComponent;
     private IngredientDTO ingredient;
     private ProductBatchComponentDTO productBatchComponent;
-    private float tareWeight, removedWeight;
+    private double tareWeight, removedWeight;
 
     public BatchComponentController(IConnector connector, IWeightController weightController) {
         this.connector = connector;
@@ -71,7 +73,7 @@ public class BatchComponentController {
         weightCtrl.rm38(buttons.size());
         weightCtrl.receiveMessage(); //Wait for user to push a button
 
-        float tareWeight = stof(weightCtrl.tareWeight());
+        double tareWeight = stod(weightCtrl.tareWeight());
         productBatchComponent.setTare(tareWeight);
         this.tareWeight = tareWeight;
     }
@@ -123,7 +125,8 @@ public class BatchComponentController {
         weightCtrl.rm38(buttons.size());
         weightCtrl.receiveMessage(); //Wait for user to push a button
 
-        float netWeight = stof(weightCtrl.getCurrentWeight());
+        double netWeight = stod(weightCtrl.getCurrentWeight());
+        System.out.println("Netweight: " + netWeight);
         productBatchComponent.setNetWeight(netWeight);
 
         if (netWeight > recipeComponent.getNominatedNetWeight() * (1+(recipeComponent.getTolerance()/100.0))
@@ -143,7 +146,7 @@ public class BatchComponentController {
         String userInput = rm208("", Lang.msg("removeall"), IWeightController.KeyPadState.NUMERIC);
         if (userInput.startsWith("RM20 C")) throw new IllegalStateException("User cancelled operation");
 
-        this.removedWeight = stof(weightCtrl.getCurrentWeight());
+        this.removedWeight = stod(weightCtrl.getCurrentWeight());
     }
 
     private boolean tareControl() throws IOException {
@@ -188,12 +191,12 @@ public class BatchComponentController {
         }
     }
 
-    private static float stof(String str) {
+    private static double stod(String str) {
         try {
             str = str.replace(",", ".");
-            return Float.parseFloat(str);
+            return Double.parseDouble(str);
         } catch (Exception e) {
-            System.err.println(Lang.msg("errSTOF") + "!");
+            System.err.println(Lang.msg("errSTOD") + "!");
             return -1;
         }
     }
