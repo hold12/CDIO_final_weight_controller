@@ -1,6 +1,6 @@
-package dao;
+package db.dao;
 
-import dto.IngredientDTO;
+import db.dto.IngredientDTO;
 import jdbclib.DALException;
 
 public interface IIngredientDAO {

@@ -1,6 +1,6 @@
-package dao;
+package db.dao;
 
-import dto.ProductBatchComponentDTO;
+import db.dto.ProductBatchComponentDTO;
 import jdbclib.DALException;
 import jdbclib.IConnector;
 

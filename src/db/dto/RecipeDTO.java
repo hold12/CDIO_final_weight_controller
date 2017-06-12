@@ -1,4 +1,4 @@
-package dto;
+package db.dto;
 
 public class RecipeDTO {
 	private int recipeId;
