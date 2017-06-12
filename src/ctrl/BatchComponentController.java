@@ -126,15 +126,15 @@ public class BatchComponentController {
         float netWeight = stof(weightCtrl.getCurrentWeight());
         productBatchComponent.setNetWeight(netWeight);
 
-        if (netWeight > recipeComponent.getNominatedNetWeight() + recipeComponent.getTolerance()
-                || netWeight < recipeComponent.getNominatedNetWeight() - recipeComponent.getTolerance()) {
+        if (netWeight > recipeComponent.getNominatedNetWeight() * (1+(recipeComponent.getTolerance()/100.0))
+                || netWeight < recipeComponent.getNominatedNetWeight() * (1-(recipeComponent.getTolerance()/100.0))) {
             weightCtrl.writeToSecondaryDisplay(Lang.msg("errWeight"));
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            throw new IllegalStateException(Lang.msg("errWeight"));
+            getWeight();
         }
     }
 
