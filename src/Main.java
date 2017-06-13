@@ -81,7 +81,7 @@ public class Main {
             return;
         }
         try {
-            while (weightClient.rm208("", "Press OK to begin anew.", IWeightController.KeyPadState.NUMERIC).equals("RM20 C"));
+            while (weightClient.rm208("", Lang.msg("start"), IWeightController.KeyPadState.NUMERIC).equals("RM20 C"));
         } catch (IOException e) {
             e.printStackTrace();
         }
