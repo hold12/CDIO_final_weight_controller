@@ -61,7 +61,7 @@ public class BatchComponentController {
     private void tareWeight() throws IOException{
         // Place tara
         weightCtrl.showWeightDisplay();
-        weightCtrl.writeToSecondaryDisplay(Lang.msg("placeTare"));
+        weightCtrl.writeToSecondaryDisplay(substring30(Lang.msg("placeTare")));
 
         LinkedList<String> buttons = new LinkedList<>();
         buttons.add("");
@@ -113,7 +113,7 @@ public class BatchComponentController {
     private void getWeight() throws IOException {
         // Place ingredient
         weightCtrl.showWeightDisplay();
-        weightCtrl.writeToSecondaryDisplay(Lang.msg("place") + " " + ingredient.getIngredientName());
+        weightCtrl.writeToSecondaryDisplay(substring30(Lang.msg("place") + " " + ingredient.getIngredientName()));
 
         LinkedList<String> buttons = new LinkedList<>();
         buttons.add("");
@@ -131,7 +131,7 @@ public class BatchComponentController {
 
         if (netWeight > recipeComponent.getNominatedNetWeight() * (1+(recipeComponent.getTolerance()/100.0))
                 || netWeight < recipeComponent.getNominatedNetWeight() * (1-(recipeComponent.getTolerance()/100.0))) {
-            weightCtrl.writeToSecondaryDisplay(Lang.msg("errWeight"));
+            weightCtrl.writeToSecondaryDisplay(substring30(Lang.msg("errWeight")));
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
@@ -161,7 +161,7 @@ public class BatchComponentController {
             return true;
         } else {
             weightCtrl.writeToPrimaryDisplay("TareErr");
-            weightCtrl.writeToSecondaryDisplay(Lang.msg("errTareControl"));
+            weightCtrl.writeToSecondaryDisplay(substring30(Lang.msg("errTareControl")));
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException e) {
@@ -186,6 +186,14 @@ public class BatchComponentController {
     private String substring24(String str) {
         if (str.length() > 24) {
             return str.substring(0, 24);
+        } else {
+            return str;
+        }
+    }
+    
+    private String substring30(String str) {
+        if (str.length() > 30) {
+            return str.substring(0, 30);
         } else {
             return str;
         }
