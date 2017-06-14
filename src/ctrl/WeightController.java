@@ -16,9 +16,14 @@ public class WeightController implements IWeightController {
     public void connect(String host, int port) throws IOException {
         try {
             tcp.connect(host, port);
-            receiveMessage(); // Receive initial "I4 A" after power-on
         } catch (IOException e) {
             throw new IOException("Failed to connect to " + host + " on port " + port + ": " + e.getMessage());
+        }
+
+        try {
+            receiveMessage(); // Receive initial "I4 A" after power-on
+        } catch (IOException e) {
+            throw new IOException("Failed to receive initial I4 A message: " + e.getMessage());
         }
     }
 
